@@ -1,25 +1,24 @@
-﻿using System.Diagnostics;
-using System.Drawing;
+﻿using System.Drawing;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using TGUI.GUI_Elements;
-using Debug = TGUI.GUI_Elements.Debug;
+using TTKGui.GUI_Elements;
+using Debug = TTKGui.GUI_Elements.Debug;
 
-namespace TGUI.Windowing;
+namespace TTKGui.Windowing;
 
 
 
 public class GuiWindow : GameWindow
 {
     public List<Element> RootElements = new ();
-    public int GuiScale;
+    public List<Element> DisposedElements = new ();
     public GuiWindow(GameWindowSettings gameSettings, NativeWindowSettings nativeSettings) 
         : base(gameSettings, nativeSettings)
     {
-
+        
     }
     
     protected override void OnResize(ResizeEventArgs e)
@@ -82,21 +81,25 @@ public class GuiWindow : GameWindow
     
     protected override void OnRenderFrame(FrameEventArgs args)
     {
-        var timer = new Stopwatch();
-        timer.Start();
         GL.Clear(ClearBufferMask.ColorBufferBit);
+        if (RootElements.Count != 0)
+        {
+            foreach (var element in DisposedElements)
+            {
+                RootElements.Remove(element);
+            }
+            DisposedElements.Clear();
+        }
         
         foreach (var element in RootElements)
         {
             element.Draw();
         }
         Debug.DebugDraw();
-        Context.SwapBuffers();
         base.OnRenderFrame(args);
-        if (1 / UpdateTime < 155)
-        {
-            //Console.WriteLine(1/UpdateTime);
-        }
+        
+        Context.SwapBuffers();
+
     }
 
     protected override void OnLoad()
@@ -116,8 +119,16 @@ public class GuiWindow : GameWindow
         //     
         // }
         //RootElements.Add(new Slider(this, (200,100), (100, 15), 0, 10, 2));
-        //RootElements.Add(new Panel(this, (50,50), (250, 400), "test panel"));
+        var panel = new Panel(this, (100, 100), (250, 300), "Elements", align: AlignMode.UpperLeft);
+        panel.AddElement(new Button(this, Vector2i.Zero, (40, panel.SlotHeight), "test"), "Test Button1");
+        panel.AddElement(new Button(this, Vector2i.Zero, (40, panel.SlotHeight), "test"), "Button2");
+        panel.AddElement(new Slider(this, Vector2i.Zero, (100, panel.SlotHeight), 0, 10, 5), "slider???");
+        panel.AddElement(new TextBox(this, Vector2i.Zero, (100, panel.SlotHeight)), "TEXT BOX");
+        panel.AddElement(new Checkbox(this, Vector2i.Zero, panel.SlotHeight), "checkbox");
+        RootElements.Add(panel);
+        //RootElements[0].AnchorPoint = (0.5f, 0.5f);
+        
         //RootElements.Add(new Button(this, (100,100), (100, 20), "test"));
-        RootElements.Add(new TextBox(this, (100,100), (300, 40), textSize:20));
+        //RootElements.Add(new TextBox(this, (100,100), (300, 40), textSize:20));
     }
 }

@@ -1,9 +1,9 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using TGUI.Windowing;
+using TTKGui.Windowing;
 
-namespace TGUI.GUI_Elements;
+namespace TTKGui.GUI_Elements;
 
 public class DragBox : Element
 {

@@ -1,9 +1,9 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using TGUI.Windowing;
+using TTKGui.Windowing;
 
-namespace TGUI.GUI_Elements;
+namespace TTKGui.GUI_Elements;
 
 public class Slider : Element
 {
@@ -20,7 +20,7 @@ public class Slider : Element
     private float _val;
     private float _min;
     private float _max;
-    private bool _intOnly;
+    private bool _intSteps;
     public Action? OnUpdate;
     
     public Slider(
@@ -31,12 +31,12 @@ public class Slider : Element
         Texture? markerTex = null,
         Vector4i? slideColor = null,
         Vector4i? barColor = null,
-        bool intOnly = true,
+        bool intSteps = true,
         
         AlignMode align = AlignMode.Default)
         : base(window, pos, Shader.BasicShader, Texture.Blank, align, size)
     {
-        _intOnly = intOnly;
+        _intSteps = intSteps;
         _min = min;
         _max = max;
         _val = defVal;
@@ -45,9 +45,9 @@ public class Slider : Element
         OnMouseDrag = DragAction;
         OnMouseUp = MouseUpAction;
         
-        markerTex ??= Texture.Circle(Theme.White, size.Y / 2);
-        var slideTex = Texture.Box(slideColor ?? Theme.AccentColor, size);
-        var barTex = Texture.Box(barColor ?? Theme.BackgroundColor, size);
+        markerTex ??= Texture.Box(Theme.White, (10, size.Y));
+        var slideTex = Texture.Box(slideColor ?? Theme.Accent, size);
+        var barTex = Texture.Box(barColor ?? Theme.Background, size);
         var markerPos = (int)(defVal / max * size.X);
 
         var centerY = GetCenterYOffset();
@@ -66,7 +66,7 @@ public class Slider : Element
         
         float slidePos = (mousePos.X - BoundingBox.Min.X) / (float)Size.X;
         _val = slidePos * (_max - _min) + _min;
-        if (_intOnly)
+        if (_intSteps)
         {
             _val = (int)Value;
         }
@@ -80,7 +80,7 @@ public class Slider : Element
         
         float slidePos = (m.X - BoundingBox.Min.X) / Size.X;
         _val = slidePos * (_max - _min) + _min;
-        if (_intOnly)
+        if (_intSteps)
         {
             _val = (int)_val;
         }

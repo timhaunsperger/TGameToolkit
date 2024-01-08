@@ -7,7 +7,7 @@ using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using TGUI;
+using TTKGui;
 
 
 public static class TextGenerator
@@ -20,14 +20,18 @@ public static class TextGenerator
 
     static TextGenerator()
     {
-        _defaultFont = _fonts.Add("Text/OpenSans-Regular.ttf");
+        _defaultFont = _fonts.Add("Text/OpenSans-Medium.ttf");
     }
     
     public static void AddFont(string fontPath)
     {
         _fonts.Add(fontPath);
     }
-
+    
+    /// <summary>
+    /// Default fonts included are OpenSans-Medium.ttf and OpenSans-SemiBold.ttf
+    /// </summary>
+    /// <param name="fontName"></param>
     public static void SetDefaultFont(string fontName)
     {
         if (!_fonts.TryGet(fontName, out _defaultFont))
@@ -50,7 +54,6 @@ public static class TextGenerator
             return glyph;
         }
         
-        
         var width = TextMeasurer.MeasureAdvance(text, textOptions).Width;
         var height = size * 1.2;
         if (width == 0)
@@ -63,7 +66,7 @@ public static class TextGenerator
         IPathCollection charShape = TextBuilder.GenerateGlyphs(text, textOptions);
         var image = new Image<A8>((int)width, (int)height);
         image.Mutate(x => x.Fill(new Rgba32(0f, 0f, 0f, 0f)));
-        image.Mutate(x => x.Fill(new Rgba32(1f, 1f, 1f, 1f), charShape));
+        image.Mutate(x => x.Fill(new Rgba32(1f, 1f, 1f), charShape));
         
         var imgData = new byte[(int)width * (int)height];
         
@@ -99,6 +102,12 @@ public static class TextGenerator
             charWidths[i] = charImgData.Item1;
             chars[i] = charImgData;
         }
+
+        if (netWidth == 0)
+        {
+            imgData = new byte[] { 100, 0, 0, 0 };
+            return;
+        }
         
         var netByteWidth = 4 * netWidth;
         imgData = new byte[netByteWidth * height];
@@ -128,6 +137,13 @@ public static class TextGenerator
     public static Texture GetStringTex(string text, int size, Vector4i color)
     {
         GetStringData(text, size, color, out _, out byte[] texData, out int netWidth, out int height);
+        
+        // Prevent black box for empty texture
+        if (netWidth == 0)
+        {
+            netWidth = 1;
+        }
+        
         return new Texture(texData, netWidth, height);
     }
 

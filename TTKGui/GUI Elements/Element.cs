@@ -2,9 +2,9 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using TGUI.Windowing;
+using TTKGui.Windowing;
 
-namespace TGUI.GUI_Elements;
+namespace TTKGui.GUI_Elements;
 
 /// <summary>
 /// Class to represent a single drawn GUI element.
@@ -15,9 +15,15 @@ public class Element
     public readonly GuiWindow Window;
     private Vector2i _pos;
     private Vector2i _size;
-    private Vector2 _anchorPoint;
+    public Vector2 AnchorPoint;
     public Vector2i Size => _size;
     public Vector2i Pos => _pos;
+    
+    /// <summary>
+    /// The vector from the upper-left corner of the element's bounding box to _pos.
+    /// </summary>
+    public Vector2i PosOffset => _pos - BoundingBox.Min;
+    
     public Box2i BoundingBox { get; private set; }
     public AlignMode Align;
     public HashSet<string> Flags = new();
@@ -84,7 +90,7 @@ public class Element
     /// <param name="anchorPoint">Position in normalized window space to anchor element, only used if element is root.</param>
     public Element(
         GuiWindow window,
-        Vector2i pos,
+        Vector2i? pos = null,
         Shader? shader = null,
         Texture? texture = null,
         AlignMode align = AlignMode.Default,
@@ -92,12 +98,12 @@ public class Element
         Vector2? anchorPoint = null)
     {
         Window = window;
-        _pos = pos;
         Align = align;
+        _pos = pos ?? (0, 0);
         _shader = shader ?? Shader.BasicShader;
         Texture = texture ?? Texture.Blank;
         _size = size ?? new Vector2i(Texture.Width, Texture.Height);
-        _anchorPoint = anchorPoint ?? new Vector2(0, 0);
+        AnchorPoint = anchorPoint ?? new Vector2(0, 0);
         if (size != null) { Flags.Add("FixedSize"); }
         Init();
     }
@@ -228,7 +234,7 @@ public class Element
     
     private Vector2i GetAbsPos()
     {
-        return Parent == null ? _pos + (Vector2i)(_anchorPoint * Window.ClientSize) : Parent.GetAbsPos() + _pos;
+        return Parent == null ? Pos + (Vector2i)(AnchorPoint * Window.ClientSize) : Parent.GetAbsPos() + Pos;
     }
     
     /// <summary>
@@ -238,6 +244,7 @@ public class Element
     private Vector2i[] GetPixelVertices()
     {
         var absPos = GetAbsPos();
+        var size = Size;
         Vector2i[] vertices;
         
         // Min and max y flipped since opengl uses bottom y origin and GUI uses top y origin
@@ -246,46 +253,46 @@ public class Element
             case AlignMode.UpperLeft:
                 vertices = new[]
                 {   //           X Pos                   Y Pos
-                    new Vector2i(absPos.X,             absPos.Y + _size.Y), 
-                    new Vector2i(absPos.X + _size.X, absPos.Y + _size.Y), 
-                    new Vector2i(absPos.X + _size.X, absPos.Y), 
+                    new Vector2i(absPos.X,             absPos.Y + size.Y), 
+                    new Vector2i(absPos.X + size.X, absPos.Y + size.Y), 
+                    new Vector2i(absPos.X + size.X, absPos.Y), 
                     new Vector2i(absPos.X,             absPos.Y)
                 };
                 break;
             case AlignMode.CenterLeft:
                 vertices = new[]
                 {   //           X Pos                   Y Pos
-                    new Vector2i(absPos.X,             absPos.Y + _size.Y / 2), 
-                    new Vector2i(absPos.X + _size.X, absPos.Y + _size.Y / 2), 
-                    new Vector2i(absPos.X + _size.X, absPos.Y - _size.Y / 2), 
-                    new Vector2i(absPos.X,             absPos.Y - _size.Y / 2)
+                    new Vector2i(absPos.X,             absPos.Y + size.Y / 2), 
+                    new Vector2i(absPos.X + size.X, absPos.Y + size.Y / 2), 
+                    new Vector2i(absPos.X + size.X, absPos.Y - size.Y / 2), 
+                    new Vector2i(absPos.X,             absPos.Y - size.Y / 2)
                 };
                 break;
             case AlignMode.LowerLeft:
                 vertices = new[]
                 {   //           X Pos                   Y Pos
                     new Vector2i(absPos.X,             absPos.Y), 
-                    new Vector2i(absPos.X + _size.X, absPos.Y), 
-                    new Vector2i(absPos.X + _size.X, absPos.Y - _size.Y), 
-                    new Vector2i(absPos.X,             absPos.Y - _size.Y)
+                    new Vector2i(absPos.X + size.X, absPos.Y), 
+                    new Vector2i(absPos.X + size.X, absPos.Y - size.Y), 
+                    new Vector2i(absPos.X,             absPos.Y - size.Y)
                 };
                 break;
             case AlignMode.Center:
                 vertices = new[]
                 {   //           X Pos                   Y Pos
-                    new Vector2i(absPos.X - _size.X / 2, absPos.Y + _size.Y / 2), 
-                    new Vector2i(absPos.X + _size.X / 2, absPos.Y + _size.Y / 2), 
-                    new Vector2i(absPos.X + _size.X / 2, absPos.Y - _size.Y / 2),
-                    new Vector2i(absPos.X - _size.X / 2, absPos.Y - _size.Y / 2)
+                    new Vector2i(absPos.X - size.X / 2, absPos.Y + size.Y / 2), 
+                    new Vector2i(absPos.X + size.X / 2, absPos.Y + size.Y / 2), 
+                    new Vector2i(absPos.X + size.X / 2, absPos.Y - size.Y / 2),
+                    new Vector2i(absPos.X - size.X / 2, absPos.Y - size.Y / 2)
                 };
                 break;
             case AlignMode.CenterRight:
                 vertices = new[]
                 {   //           X Pos                   Y Pos
-                    new Vector2i(absPos.X - _size.X,             absPos.Y + _size.Y / 2), 
-                    new Vector2i(absPos.X, absPos.Y + _size.Y / 2), 
-                    new Vector2i(absPos.X, absPos.Y - _size.Y / 2), 
-                    new Vector2i(absPos.X - _size.X,             absPos.Y - _size.Y / 2)
+                    new Vector2i(absPos.X - size.X,             absPos.Y + size.Y / 2), 
+                    new Vector2i(absPos.X, absPos.Y + size.Y / 2), 
+                    new Vector2i(absPos.X, absPos.Y - size.Y / 2), 
+                    new Vector2i(absPos.X - size.X,             absPos.Y - size.Y / 2)
                 };
                 break;
             default:
@@ -362,6 +369,21 @@ public class Element
         _texMinY = yMin;
         _texMaxY = yMax;
         UpdateVertices();
+    }
+
+    private bool _disposed = false;
+    public void Dispose()
+    {
+        if (Window.RootElements.Contains(this) && !_disposed)
+        {
+            Window.DisposedElements.Add(this);
+            _disposed = true;
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                "Dispose method only used for root elements, instead use Children.Remove() on parent object");
+        }
     }
 }
 

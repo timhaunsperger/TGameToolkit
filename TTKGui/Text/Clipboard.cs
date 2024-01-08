@@ -1,9 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using TGUI.Windowing;
+using TTKGui.Windowing;
 
-namespace TGUI.Text;
+namespace TTKGui.Text;
 /// <summary>
 /// This class allows reading and writing the windows system keyboard.
 /// </summary>

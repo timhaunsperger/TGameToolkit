@@ -1,10 +1,10 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using TGUI.Text;
-using TGUI.Windowing;
+using TTKGui.Text;
+using TTKGui.Windowing;
 
-namespace TGUI.GUI_Elements;
+namespace TTKGui.GUI_Elements;
 
 public class TextBox : Element
 {
@@ -35,8 +35,8 @@ public class TextBox : Element
     public Action<Element, string> OnTextSubmit = (e, s) => { };
     public Action<Element, string> OnTextUpdate = (e, s) => { };
     public TextBox(GuiWindow window, Vector2i pos, Vector2i size, AlignMode align = AlignMode.Default, 
-        Texture? boxTex = null, Vector4i? textColor = null, string defaultText = "defaultText", int textSize = 14, int capacity = 1000) 
-        : base(window, pos, Shader.BasicShader, boxTex ?? Texture.Box((50,50,50,255), size), align, size)
+        Texture? boxTex = null, Vector4i? textColor = null, string defaultText = "", int textSize = 0, int capacity = 1000) 
+        : base(window, pos, Shader.BasicShader, boxTex ?? Texture.Box(Theme.Background, size), align, size)
     {
         // Set Actions
         OnMouseClick = ClickAction;
@@ -47,38 +47,36 @@ public class TextBox : Element
         OnDraw = DrawAction;
         
         // Set properties
-        TextColor = textColor ?? Theme.TextColor;
-        _textSize = textSize;
+        TextColor = textColor ?? Theme.Text;
+        _textSize = textSize == 0 ? size.Y / 2 : textSize;
         BoxWidth = Size.X - Padding * 2;
         _capacity = capacity;
-
+        
         // Generate text writer element
         var defaultTex = TextGenerator.GetStringTex(defaultText, _textSize, TextColor);
         
         TextWriter = new Element(
-            window, new Vector2i(BoundingBox.Min.X - Pos.X + Padding, (int)BoundingBox.Center.Y / 2 - Pos.Y / 2), 
+            window, new Vector2i(BoundingBox.Min.X - Pos.X + Padding, (int)BoundingBox.Center.Y - Pos.Y), 
             Shader.BasicShader, defaultTex, AlignMode.CenterLeft, (BoxWidth, defaultTex.Height));
-        
         TextWriter.SetTexCoords(0, BoxWidth / (float)defaultTex.Width);
 
         // Generate cursor elements and textures
-        CursorTexStandard = Texture.Box(TextColor, textSize / 14, (int)(textSize * 1.2));
-        CursorTexHighlight = Texture.Box((200, 50, 255, 100), BoxWidth, (int)(_textSize * 1.2));
+        CursorTexStandard = Texture.Box(TextColor, int.Max(textSize / 14, 1), (int)(_textSize * 1.2));
+        CursorTexHighlight = Texture.Box((50, 50, 255, 100), BoxWidth, (int)(_textSize * 1.2));
         Cursor = new Element(window, new Vector2i(0, 0), Shader.BasicShader, CursorTexStandard, AlignMode.CenterLeft);
-        
         AddChild("textWriter", TextWriter);
     }
 
     private void ClickAction(Element e, Vector2i mousePos, MouseButtonEventArgs args)
     {
         if (args.Button != MouseButton.Button1) return;
-        
         if (BoundingBox.ContainsInclusive(mousePos))
         {
             Flags.Add("Active");
             TextWriter.AddChild("cursor", Cursor);
             
             AlignPosToText(mousePos, out var mouseLoc);
+            Console.WriteLine(mouseLoc);
             SetCursor(mouseLoc);
         }
         else if (Flags.Contains("Active"))
@@ -189,7 +187,7 @@ public class TextBox : Element
                 SetCursor(Text.Length, highlight);
                 break;
             case Keys.Enter:
-                OnTextSubmit?.Invoke(this, Text);
+                OnTextSubmit.Invoke(this, Text);
                 Flags.Remove("Active");
                 TextWriter.Children.Remove("cursor");
                 Cursor.Flags.Remove("Invisible");

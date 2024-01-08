@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
-using TGUI.Windowing;
+using TTKGui.Windowing;
 
-namespace TGUI.GUI_Elements;
+namespace TTKGui.GUI_Elements;
 
 public static class Debug
 {
@@ -12,7 +12,7 @@ public static class Debug
             window, 
             min, 
             Shader.BasicShader, 
-            Texture.Box((0,0,0,0), max - min, Theme.DebugColor, 1));
+            Texture.Box((0,0,0,0), max - min, Theme.Debug, 1));
         DebugElements.Add(rect);
     }
     
@@ -31,7 +31,7 @@ public static class Debug
         foreach (var e in DebugElements)
         {
             var eTex = e.Texture;
-            var debugTex = Texture.Box(Theme.BlankColor, eTex.Width, eTex.Height, Theme.DebugColor, 1);
+            var debugTex = Texture.Box(Theme.Blank, eTex.Width, eTex.Height, Theme.Debug, 1);
             e.UpdateTexture(debugTex);
             e.Render();
             e.UpdateTexture(eTex);

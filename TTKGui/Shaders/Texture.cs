@@ -1,9 +1,11 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using System.Security.Cryptography.X509Certificates;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SixLabors.ImageSharp;
 using StbImageSharp;
+using TTKGui.GUI_Elements;
 
-namespace TGUI;
+namespace TTKGui;
 public class Texture
 {
     public int Handle;
@@ -47,7 +49,6 @@ public class Texture
         GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureWrapS, (int)TextureParameterName.ClampToBorder);
         GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureWrapR, (int)TextureParameterName.ClampToBorder);
         GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureBorderColor, new float[]{0,0,0,0});
-
         GL.TexImage2D(
             TextureTarget.Texture2D,
             0,
@@ -138,6 +139,36 @@ public class Texture
         }
 
         return new Texture(data, radius * 2, radius * 2);
+    }
+
+    public static Texture Cross(int width, int height, int lineWidth, Vector4i? color = null, bool blend = true)
+    {
+        var length = width * height * 4;
+        var c = color ?? Theme.Text; // White default
+        
+        byte[] colorBytes = { (byte)c.X, (byte)c.Y, (byte)c.Z, (byte)c.W };
+        byte[] blendBytes = { (byte)c.X, (byte)c.Y, (byte)c.Z, (byte)(c.W / 2) };
+        byte[] data = new byte[length];
+        
+        // Fill box
+        for (int i = 0; i < length; i += 4)
+        {
+            var pixInd = i / 4;
+            var row = pixInd / (width);
+            var column = pixInd % (width);
+
+            if (blend && (Math.Abs(row - column) == lineWidth || Math.Abs(row - (width - column)) == lineWidth))
+            {
+                Array.Copy(blendBytes, 0, data, i, 4);
+            }
+            
+            if (Math.Abs(row - column) < lineWidth || Math.Abs(row - (width - column)) < lineWidth)
+            {
+                Array.Copy(colorBytes, 0, data, i, 4);
+            }
+        }
+
+        return new Texture(data, width, height);
     }
     
     /// <summary>

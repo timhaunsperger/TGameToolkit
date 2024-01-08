@@ -1,22 +1,24 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-using TGUI.Windowing;
+using TTKGui.Windowing;
 
-namespace TGUI.GUI_Elements;
+namespace TTKGui.GUI_Elements;
 
 public class Button : Element
 {
-    public Texture? HoverTex;
+    public Texture ClickTex;
+    public Texture HoverTex;
     public Texture BaseTex;
     public Action OnPress = () => { };
     
     public Button( 
         GuiWindow window, Vector2i pos, Vector2i size, string label = "", Vector4i? color = null,
-        AlignMode align = AlignMode.Default, int labelSize = 0) 
+        AlignMode align = AlignMode.Default, int labelSize = 14) 
         : base(window, pos, Shader.BasicShader, Texture.Blank, align, size)
     {
-        BaseTex = Texture.Box(color ??Theme.BaseColor, size);
-        HoverTex = Texture.Box(Theme.HighlightColor, size);
+        BaseTex = Texture.Box(color ??Theme.Base, size);
+        HoverTex = Texture.Box(Theme.Highlight1, size);
+        ClickTex = Texture.Box(Theme.Highlight2, size);
         
         UpdateTexture(BaseTex);
         if (label != "")
@@ -27,31 +29,40 @@ public class Button : Element
             AddChild("label", labelElement);
         }
         
-        OnMouseEnter += MouseEnterAction;
+        OnMouseEnter = MouseEnterAction;
         OnMouseExit = MouseLeaveAction;
         OnMouseClick = ClickAction;
+        OnMouseUp = MouseUpAction;
     }
 
     private void MouseEnterAction(Element e)
     {
-        if (HoverTex != null)
-        {
-            UpdateTexture(HoverTex);
-        }
+        UpdateTexture(HoverTex);
     }
     
     private void MouseLeaveAction(Element e)
     {
-        if (HoverTex != null)
-        {
-            UpdateTexture(BaseTex);
-        }
+        UpdateTexture(BaseTex);
     }
     
     private void ClickAction(Element e, Vector2i pos, MouseButtonEventArgs m)
     {
         if (!BoundingBox.ContainsInclusive(pos)) return;
-        OnPress.Invoke();
+        Flags.Add("Active");
+        UpdateTexture(ClickTex);
+    }
+
+    private void MouseUpAction(Element e, Vector2i pos, MouseButtonEventArgs m)
+    {
+        if (!Flags.Contains("Active")) return;
+        Flags.Remove("Active");
+        if (BoundingBox.ContainsInclusive(pos))
+        {
+            OnPress.Invoke();
+            UpdateTexture(HoverTex);
+            return;
+        }
+        UpdateTexture(BaseTex);
     }
     
 }

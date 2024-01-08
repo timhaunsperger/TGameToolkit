@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
-using TGUI.Windowing;
+using TTKGui.Windowing;
 
-namespace TGUI.GUI_Elements;
+namespace TTKGui.GUI_Elements;
 
 public class MultilineTextBox : TextBox
 {
