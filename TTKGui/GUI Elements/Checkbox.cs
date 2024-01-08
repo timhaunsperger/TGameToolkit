@@ -6,6 +6,8 @@ namespace TTKGui.GUI_Elements;
 
 public class Checkbox : Element
 {
+    public bool IsChecked = false;
+    
     public Texture CheckTex;
     public Texture BaseTex;
     public Action OnPress = () => { };
@@ -20,34 +22,33 @@ public class Checkbox : Element
         
         UpdateTexture(BaseTex);
         
-        OnMouseEnter = MouseEnterAction;
-        OnMouseExit = MouseLeaveAction;
         OnMouseClick = ClickAction;
-    }
-
-    private void MouseEnterAction(Element e)
-    {
-
-    }
-    
-    private void MouseLeaveAction(Element e)
-    {
-
+        OnMouseUp = MouseUpAction;
     }
     
     private void ClickAction(Element e, Vector2i pos, MouseButtonEventArgs m)
     {
         if (!BoundingBox.ContainsInclusive(pos)) return;
+        Flags.Add("Active");
+    }
+    
+    private void MouseUpAction(Element e, Vector2i pos, MouseButtonEventArgs m)
+    {
+        if (!Flags.Contains("Active")) return;
+        Flags.Remove("Active");
         
-        if (Flags.Contains("Active"))
+        if (!BoundingBox.ContainsInclusive(pos)) return;
+        OnPress.Invoke();
+        
+        if (IsChecked)
         {
-            Flags.Remove("Active");
+            IsChecked = false;
             UpdateTexture(BaseTex);
             return;
         }
-        Flags.Add("Active");
+
+        IsChecked = true;
         UpdateTexture(CheckTex);
-        
     }
     
 }

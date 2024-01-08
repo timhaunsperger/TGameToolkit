@@ -95,11 +95,16 @@ public class GuiWindow : GameWindow
         {
             element.Draw();
         }
+
+        // if (1/UpdateTime < 155)
+        // {
+        //     Console.WriteLine(1/UpdateTime);
+        // }
+        
         Debug.DebugDraw();
         base.OnRenderFrame(args);
         
         Context.SwapBuffers();
-
     }
 
     protected override void OnLoad()
@@ -108,17 +113,7 @@ public class GuiWindow : GameWindow
         GL.ClearColor(Color.Black);
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-        // RootElements.Add(new TextBox(
-        //     this,
-        //     (Vector2i)ClientRectangle.Center,
-        //     (600, 150),
-        //     AlignMode.Center, textSize: 16));
-        // for (int i = 0; i < 750; i++)
-        // {
-        //     
-        // }
-        //RootElements.Add(new Slider(this, (200,100), (100, 15), 0, 10, 2));
+        
         var panel = new Panel(this, (100, 100), (250, 300), "Elements", align: AlignMode.UpperLeft);
         panel.AddElement(new Button(this, Vector2i.Zero, (40, panel.SlotHeight), "test"), "Test Button1");
         panel.AddElement(new Button(this, Vector2i.Zero, (40, panel.SlotHeight), "test"), "Button2");
