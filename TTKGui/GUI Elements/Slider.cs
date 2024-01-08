@@ -18,10 +18,11 @@ public class Slider : Element
     }
 
     private float _val;
-    private float _min;
-    private float _max;
-    private bool _intSteps;
-    public Action? OnUpdate;
+    private readonly float _min;
+    private readonly float _max;
+    private readonly bool _intSteps;
+    private readonly bool _label;
+    public readonly Action OnUpdate = () => { };
     
     public Slider(
         GuiWindow window, Vector2i pos, Vector2i size, 
@@ -32,7 +33,7 @@ public class Slider : Element
         Vector4i? slideColor = null,
         Vector4i? barColor = null,
         bool intSteps = true,
-        
+        bool label = true,
         AlignMode align = AlignMode.Default)
         : base(window, pos, Shader.BasicShader, Texture.Blank, align, size)
     {
@@ -40,12 +41,13 @@ public class Slider : Element
         _min = min;
         _max = max;
         _val = defVal;
+        _label = label;
 
         OnMouseClick = ClickAction;
         OnMouseDrag = DragAction;
         OnMouseUp = MouseUpAction;
         
-        markerTex ??= Texture.Box(Theme.White, (10, size.Y));
+        markerTex ??= Texture.Box(Theme.White, (5, size.Y));
         var slideTex = Texture.Box(slideColor ?? Theme.Accent, size);
         var barTex = Texture.Box(barColor ?? Theme.Background, size);
         var markerPos = (int)(defVal / max * size.X);
@@ -57,6 +59,12 @@ public class Slider : Element
             window, (0, centerY), Shader.BasicShader, slideTex, AlignMode.CenterLeft, (markerPos, size.Y / 2)));
         AddChild("marker", new Element(
             window, (markerPos, centerY), Shader.BasicShader, markerTex, AlignMode.Center));
+        if (label)
+        {
+            AddChild("label", new Label(
+                window, (size.X + 10, centerY), $"{defVal}", (int)(size.Y / 1.5), align:AlignMode.CenterLeft ));
+        }
+        
     }
 
     private void ClickAction(Element e, Vector2i mousePos, MouseButtonEventArgs m)
@@ -70,6 +78,7 @@ public class Slider : Element
         {
             _val = (int)Value;
         }
+        
         UpdateSlider();
     }
     
@@ -106,6 +115,12 @@ public class Slider : Element
         bar.Resize(Size.X - markerPos, bar.Size.Y);
         slider.Resize(markerPos, slider.Size.Y);
         
-        OnUpdate?.Invoke();
+        if (_label)
+        {
+            var label = (Label)Children["label"];
+            label.UpdateLabel($"{_val}");
+        }
+        
+        OnUpdate.Invoke();
     }
 }

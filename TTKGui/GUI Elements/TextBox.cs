@@ -48,7 +48,7 @@ public class TextBox : Element
         
         // Set properties
         TextColor = textColor ?? Theme.Text;
-        _textSize = textSize == 0 ? size.Y / 2 : textSize;
+        _textSize = textSize == 0 ? (int)(size.Y / 1.5) : textSize;
         BoxWidth = Size.X - Padding * 2;
         _capacity = capacity;
         

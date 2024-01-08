@@ -15,7 +15,6 @@ namespace TTKGui
             nativeWindowSettings.Location = new Vector2i(0,0);
             var app = new GuiWindow(gameWindowSettings, nativeWindowSettings);
             app.Run();
-            
         }
     }
 }

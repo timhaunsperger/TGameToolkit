@@ -252,29 +252,38 @@ public class Element
         {
             case AlignMode.UpperLeft:
                 vertices = new[]
-                {   //           X Pos                   Y Pos
-                    new Vector2i(absPos.X,             absPos.Y + size.Y), 
+                {   //           X Pos                Y Pos
+                    new Vector2i(absPos.X,            absPos.Y + size.Y), 
                     new Vector2i(absPos.X + size.X, absPos.Y + size.Y), 
                     new Vector2i(absPos.X + size.X, absPos.Y), 
-                    new Vector2i(absPos.X,             absPos.Y)
+                    new Vector2i(absPos.X,            absPos.Y)
                 };
                 break;
             case AlignMode.CenterLeft:
                 vertices = new[]
-                {   //           X Pos                   Y Pos
-                    new Vector2i(absPos.X,             absPos.Y + size.Y / 2), 
+                {   //           X Pos                Y Pos
+                    new Vector2i(absPos.X,            absPos.Y + size.Y / 2), 
                     new Vector2i(absPos.X + size.X, absPos.Y + size.Y / 2), 
                     new Vector2i(absPos.X + size.X, absPos.Y - size.Y / 2), 
-                    new Vector2i(absPos.X,             absPos.Y - size.Y / 2)
+                    new Vector2i(absPos.X,            absPos.Y - size.Y / 2)
                 };
                 break;
             case AlignMode.LowerLeft:
                 vertices = new[]
-                {   //           X Pos                   Y Pos
-                    new Vector2i(absPos.X,             absPos.Y), 
+                {   //           X Pos                Y Pos
+                    new Vector2i(absPos.X,            absPos.Y), 
                     new Vector2i(absPos.X + size.X, absPos.Y), 
                     new Vector2i(absPos.X + size.X, absPos.Y - size.Y), 
-                    new Vector2i(absPos.X,             absPos.Y - size.Y)
+                    new Vector2i(absPos.X,            absPos.Y - size.Y)
+                };
+                break;
+            case AlignMode.UpperCenter:
+                vertices = new[]
+                {   //           X Pos                   Y Pos
+                    new Vector2i(absPos.X - size.X / 2, absPos.Y + size.Y), 
+                    new Vector2i(absPos.X + size.X / 2, absPos.Y + size.Y), 
+                    new Vector2i(absPos.X + size.X / 2, absPos.Y),
+                    new Vector2i(absPos.X - size.X / 2, absPos.Y)
                 };
                 break;
             case AlignMode.Center:
@@ -286,17 +295,46 @@ public class Element
                     new Vector2i(absPos.X - size.X / 2, absPos.Y - size.Y / 2)
                 };
                 break;
+            case AlignMode.LowerCenter:
+                vertices = new[]
+                {   //           X Pos                   Y Pos
+                    new Vector2i(absPos.X - size.X / 2, absPos.Y), 
+                    new Vector2i(absPos.X + size.X / 2, absPos.Y), 
+                    new Vector2i(absPos.X + size.X / 2, absPos.Y - size.Y),
+                    new Vector2i(absPos.X - size.X / 2, absPos.Y - size.Y)
+                };
+                break;
+            
+            case AlignMode.UpperRight:
+                vertices = new[]
+                {   //           X Pos                   Y Pos
+                    new Vector2i(absPos.X - size.X,  absPos.Y + size.Y), 
+                    new Vector2i(absPos.X,             absPos.Y + size.Y), 
+                    new Vector2i(absPos.X,             absPos.Y), 
+                    new Vector2i(absPos.X - size.X,  absPos.Y)
+                };
+                break;
+            
             case AlignMode.CenterRight:
                 vertices = new[]
                 {   //           X Pos                   Y Pos
-                    new Vector2i(absPos.X - size.X,             absPos.Y + size.Y / 2), 
-                    new Vector2i(absPos.X, absPos.Y + size.Y / 2), 
-                    new Vector2i(absPos.X, absPos.Y - size.Y / 2), 
-                    new Vector2i(absPos.X - size.X,             absPos.Y - size.Y / 2)
+                    new Vector2i(absPos.X - size.X,  absPos.Y + size.Y / 2), 
+                    new Vector2i(absPos.X,             absPos.Y + size.Y / 2), 
+                    new Vector2i(absPos.X,             absPos.Y - size.Y / 2), 
+                    new Vector2i(absPos.X - size.X,  absPos.Y - size.Y / 2)
+                };
+                break;
+            case AlignMode.LowerRight:
+                vertices = new[]
+                {   //           X Pos                   Y Pos
+                    new Vector2i(absPos.X - size.X,  absPos.Y + size.Y / 2), 
+                    new Vector2i(absPos.X,             absPos.Y + size.Y / 2), 
+                    new Vector2i(absPos.X,             absPos.Y - size.Y / 2), 
+                    new Vector2i(absPos.X - size.X,  absPos.Y - size.Y / 2)
                 };
                 break;
             default:
-                throw new NotImplementedException("Align case not implemented");
+                throw new Exception("Invalid Align Argument");
         }
 
         return vertices;
@@ -371,8 +409,8 @@ public class Element
         UpdateVertices();
     }
 
-    private bool _disposed = false;
-    public void Dispose()
+    private bool _disposed;
+    protected void Dispose()
     {
         if (Window.RootElements.Contains(this) && !_disposed)
         {

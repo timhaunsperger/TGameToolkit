@@ -3,7 +3,6 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using TTKGui.GUI_Elements;
 using Debug = TTKGui.GUI_Elements.Debug;
 
@@ -13,6 +12,7 @@ namespace TTKGui.Windowing;
 
 public class GuiWindow : GameWindow
 {
+    private GameWindow _window;
     public List<Element> RootElements = new ();
     public List<Element> DisposedElements = new ();
     public GuiWindow(GameWindowSettings gameSettings, NativeWindowSettings nativeSettings) 
@@ -95,11 +95,6 @@ public class GuiWindow : GameWindow
         {
             element.Draw();
         }
-
-        // if (1/UpdateTime < 155)
-        // {
-        //     Console.WriteLine(1/UpdateTime);
-        // }
         
         Debug.DebugDraw();
         base.OnRenderFrame(args);
@@ -110,20 +105,17 @@ public class GuiWindow : GameWindow
     protected override void OnLoad()
     {
         base.OnLoad();
-        GL.ClearColor(Color.Black);
+
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         
-        var panel = new Panel(this, (100, 100), (250, 300), "Elements", align: AlignMode.UpperLeft);
+        var panel = new Panel(this, (0, 0), 250, "Elements");
         panel.AddElement(new Button(this, Vector2i.Zero, (40, panel.SlotHeight), "test"), "Test Button1");
         panel.AddElement(new Button(this, Vector2i.Zero, (40, panel.SlotHeight), "test"), "Button2");
         panel.AddElement(new Slider(this, Vector2i.Zero, (100, panel.SlotHeight), 0, 10, 5), "slider???");
         panel.AddElement(new TextBox(this, Vector2i.Zero, (100, panel.SlotHeight)), "TEXT BOX");
         panel.AddElement(new Checkbox(this, Vector2i.Zero, panel.SlotHeight), "checkbox");
         RootElements.Add(panel);
-        //RootElements[0].AnchorPoint = (0.5f, 0.5f);
         
-        //RootElements.Add(new Button(this, (100,100), (100, 20), "test"));
-        //RootElements.Add(new TextBox(this, (100,100), (300, 40), textSize:20));
     }
 }
