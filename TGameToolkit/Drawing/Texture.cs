@@ -1,11 +1,9 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using SixLabors.ImageSharp;
 using StbImageSharp;
-using TTKGui.GUI_Elements;
+using TGameToolkit.GUI_Elements;
 
-namespace TTKGui;
+namespace TGameToolkit.Drawing;
 public class Texture
 {
     public int Handle;

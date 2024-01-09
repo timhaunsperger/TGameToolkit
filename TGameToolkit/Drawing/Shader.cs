@@ -1,16 +1,15 @@
-﻿using System.Text;
-using OpenTK;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace TTKGui;
+namespace TGameToolkit.Drawing;
 
 public class Shader
 {
     private readonly int _handle;
     private readonly Dictionary<string, int> _uniformLocations;
 
-    public static readonly Shader BasicShader = new Shader("Shaders/UI.vert", "Shaders/UI.frag");
+    public static readonly Shader BasicShader = new Shader(
+        "Shaders/UI.vert", "Shaders/UI.frag");
 
     public Shader(string vertexPath, string fragmentPath)
     {

@@ -1,8 +1,10 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-using TTKGui.Windowing;
+using TGameToolkit.Drawing;
+using TGameToolkit.GUI_Elements.Text;
+using TGameToolkit.Windowing;
 
-namespace TTKGui.GUI_Elements;
+namespace TGameToolkit.GUI_Elements;
 
 public class Button : Element
 {

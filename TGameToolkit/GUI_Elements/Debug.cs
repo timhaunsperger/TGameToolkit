@@ -1,7 +1,8 @@
 ﻿using OpenTK.Mathematics;
-using TTKGui.Windowing;
+using TGameToolkit.Drawing;
+using TGameToolkit.Windowing;
 
-namespace TTKGui.GUI_Elements;
+namespace TGameToolkit.GUI_Elements;
 
 public static class Debug
 {
@@ -30,7 +31,7 @@ public static class Debug
     {
         foreach (var e in DebugElements)
         {
-            var eTex = e.Texture;
+            var eTex = e.Tex;
             var debugTex = Texture.Box(Theme.Blank, eTex.Width, eTex.Height, Theme.Debug, 1);
             e.UpdateTexture(debugTex);
             e.Render();

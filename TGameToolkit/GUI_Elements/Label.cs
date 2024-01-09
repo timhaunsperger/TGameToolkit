@@ -1,7 +1,9 @@
 ﻿using OpenTK.Mathematics;
-using TTKGui.Windowing;
+using TGameToolkit.GUI_Elements.Text;
+using TGameToolkit.Windowing;
+using TGameToolkit.Drawing;
 
-namespace TTKGui.GUI_Elements;
+namespace TGameToolkit.GUI_Elements;
 
 public class Label : Element
 {

@@ -1,10 +1,11 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using TTKGui.Text;
-using TTKGui.Windowing;
+using TGameToolkit.Drawing;
+using TGameToolkit.GUI_Elements.Text;
+using TGameToolkit.Windowing;
 
-namespace TTKGui.GUI_Elements;
+namespace TGameToolkit.GUI_Elements;
 
 public class TextBox : Element
 {
@@ -360,7 +361,7 @@ public class TextBox : Element
         {
             _prevText = Text;
             
-            // Update Texture
+            // Update Tex
             TextGenerator.GetStringData(
                 Text,
                 _textSize,

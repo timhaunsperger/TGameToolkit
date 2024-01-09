@@ -1,8 +1,9 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-using TTKGui.Windowing;
+using TGameToolkit.Drawing;
+using TGameToolkit.Windowing;
 
-namespace TTKGui.GUI_Elements;
+namespace TGameToolkit.GUI_Elements;
 
 public class Checkbox : Element
 {

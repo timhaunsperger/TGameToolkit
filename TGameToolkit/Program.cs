@@ -1,8 +1,8 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
-using TTKGui.Windowing;
+using TGameToolkit.Windowing;
 
-namespace TTKGui
+namespace TGameToolkit
 {
     class Program
     {
@@ -11,7 +11,7 @@ namespace TTKGui
             GameWindowSettings gameWindowSettings = GameWindowSettings.Default;
             NativeWindowSettings nativeWindowSettings = NativeWindowSettings.Default;
             gameWindowSettings.UpdateFrequency = 160;
-            nativeWindowSettings.Title = "TTKGui App";
+            nativeWindowSettings.Title = "TGameToolkit App";
             nativeWindowSettings.Location = new Vector2i(0,0);
             var app = new GuiWindow(gameWindowSettings, nativeWindowSettings);
             app.Run();

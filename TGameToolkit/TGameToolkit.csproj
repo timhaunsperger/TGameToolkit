@@ -5,8 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <RootNamespace>TGUI</RootNamespace>
         <OutputType>Exe</OutputType>
+        <RootNamespace>TGameToolkit</RootNamespace>
+        <PackageId>TGameToolkit</PackageId>
     </PropertyGroup>
     
     <ItemGroup>
@@ -18,16 +19,19 @@
     
     <ItemGroup>
       <None Update="Shaders\UI.frag">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
       <None Update="Shaders\UI.vert">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="GUI_Elements\Text\OpenSans-Medium.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Shaders\basic.frag">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="Text\OpenSans-SemiBold.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Text\OpenSans-Medium.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <None Update="Shaders\basic.vert">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
 

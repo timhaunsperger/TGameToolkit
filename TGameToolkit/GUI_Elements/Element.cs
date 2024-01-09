@@ -2,9 +2,10 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using TTKGui.Windowing;
+using TGameToolkit.Drawing;
+using TGameToolkit.Windowing;
 
-namespace TTKGui.GUI_Elements;
+namespace TGameToolkit.GUI_Elements;
 
 /// <summary>
 /// Class to represent a single drawn GUI element.
@@ -65,7 +66,7 @@ public class Element
     
     // Shader and textures for GUI element
     private Shader _shader;
-    public Texture Texture { get; private set; }
+    public Texture Tex { get; private set; }
 
     // Vertex texture coordinates
     private float _texMinX;
@@ -84,7 +85,7 @@ public class Element
     /// <param name="window">GUI Window this element is drawn in.</param>
     /// <param name="pos">Position of element in normalized window coordinates relative to parent, or relative to center of window if element is root.</param>
     /// <param name="shader">Shader program to use when rendering element.</param>
-    /// <param name="texture">Texture to use when rendering element.</param>
+    /// <param name="texture">Tex to use when rendering element.</param>
     /// <param name="align">Which point on the element will correspond to its position.</param>
     /// <param name="size">Vector representing size of GUI element bounding box.</param>
     /// <param name="anchorPoint">Position in normalized window space to anchor element, only used if element is root.</param>
@@ -101,8 +102,8 @@ public class Element
         Align = align;
         _pos = pos ?? (0, 0);
         _shader = shader ?? Shader.BasicShader;
-        Texture = texture ?? Texture.Blank;
-        _size = size ?? new Vector2i(Texture.Width, Texture.Height);
+        Tex = texture ?? Texture.Blank;
+        _size = size ?? new Vector2i(Tex.Width, Tex.Height);
         AnchorPoint = anchorPoint ?? new Vector2(0, 0);
         if (size != null) { Flags.Add("FixedSize"); }
         Init();
@@ -132,14 +133,14 @@ public class Element
         var texDataLoc = _shader.GetAttribLocation("aTexCoord");
         
         GL.VertexAttribPointer(
-            posDataLoc, 3, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
+            posDataLoc, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
         GL.EnableVertexAttribArray(posDataLoc);
         GL.VertexAttribPointer(
             texDataLoc, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
         GL.EnableVertexAttribArray(texDataLoc);
         
         // Activate texture
-        UpdateTexture(Texture);
+        UpdateTexture(Tex);
     }
     
 
@@ -204,7 +205,7 @@ public class Element
         GL.BindVertexArray(_vao);
         
         // Activate textures
-        Texture.Use(TextureUnit.Texture0);
+        Tex.Use(TextureUnit.Texture0);
         
         _shader.Use();
         GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
@@ -216,7 +217,7 @@ public class Element
     /// <param name="newTex">Set new texture</param>
     public void UpdateTexture(Texture newTex)
     {
-        if (Texture == newTex) { return; }
+        if (Tex == newTex) { return; }
         
         // Must activate shader to set texture units 
         _shader.Use();
@@ -229,7 +230,7 @@ public class Element
             UpdateVertices();
         }
         
-        Texture = newTex;
+        Tex = newTex;
     }
     
     private Vector2i GetAbsPos()
@@ -349,7 +350,7 @@ public class Element
         
         float[] vertices =
         {
-            // X cord                    Y Cord                       Texture cords [x,y]
+            // X cord                    Y Cord                       Tex cords [x,y]
             pixVertices[0].X/xScale - 1, 1 - pixVertices[0].Y/yScale, _texMinX, _texMinY,
             pixVertices[1].X/xScale - 1, 1 - pixVertices[1].Y/yScale, _texMaxX, _texMinY,
             pixVertices[2].X/xScale - 1, 1 - pixVertices[2].Y/yScale, _texMaxX, _texMaxY,

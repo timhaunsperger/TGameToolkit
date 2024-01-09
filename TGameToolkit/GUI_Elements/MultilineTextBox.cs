@@ -1,7 +1,7 @@
 ﻿// using OpenTK.Mathematics;
-// using TTKGui.Windowing;
+// using TGameToolkit.Windowing;
 //
-// namespace TTKGui.GUI_Elements;
+// namespace TGameToolkit.GUI_Elements;
 //
 // public class MultilineTextBox : TextBox
 // {
@@ -10,7 +10,7 @@
 //     private List<int>? _lineBreaks;
 //     
 //     public MultilineTextBox(GuiWindow window, Vector2i pos, Vector2i size, AlignMode align = AlignMode.Default, 
-//         Shader? shader = null, Texture? boxTex = null, Vector4i? textColor = null, 
+//         Shader? shader = null, Tex? boxTex = null, Vector4i? textColor = null, 
 //         string defaultText = "defaultText", int textSize = 14, int capacity = 1000) 
 //         : base(window, pos, size, align, boxTex, textColor)
 //     {
@@ -61,7 +61,7 @@
 //         //     out int height,
 //         //     out _lineBreaks);
 //         //     
-//         // TextWriter.UpdateTexture(new Texture(texData, BoxWidth, height));
+//         // TextWriter.UpdateTexture(new Tex(texData, BoxWidth, height));
 //         // TextWriter.Resize(BoxWidth, height);
 //         // AlignTextMultiLine(keepHighlight, out cursorPos);
 //     }
@@ -114,7 +114,7 @@
 //             if (highlightStartLine != highlightEndLine)
 //             {
 //                 _multilineHighlightBoxes = highlightEndLine - highlightStartLine + 1;
-//                 Cursor.UpdateTexture(Texture.Blank);
+//                 Cursor.UpdateTexture(Tex.Blank);
 //                 
 //                 for (int i = 0; i < _multilineHighlightBoxes; i++)
 //                 {

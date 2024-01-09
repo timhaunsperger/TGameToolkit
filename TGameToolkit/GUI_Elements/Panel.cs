@@ -1,7 +1,8 @@
 ﻿using OpenTK.Mathematics;
-using TTKGui.Windowing;
+using TGameToolkit.Drawing;
+using TGameToolkit.Windowing;
 
-namespace TTKGui.GUI_Elements;
+namespace TGameToolkit.GUI_Elements;
 
 public class Panel : Element
 {

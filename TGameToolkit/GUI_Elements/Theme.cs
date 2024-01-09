@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 
-namespace TTKGui.GUI_Elements;
+namespace TGameToolkit.GUI_Elements;
 
 public static class Theme
 {
