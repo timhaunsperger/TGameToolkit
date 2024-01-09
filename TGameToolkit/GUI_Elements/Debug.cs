@@ -12,7 +12,7 @@ public static class Debug
         var rect = new Element(
             window, 
             min, 
-            Shader.BasicShader, 
+            Shader.UiShader, 
             Texture.Box((0,0,0,0), max - min, Theme.Debug, 1));
         DebugElements.Add(rect);
     }

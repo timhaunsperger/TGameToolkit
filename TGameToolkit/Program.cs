@@ -13,6 +13,7 @@ namespace TGameToolkit
             gameWindowSettings.UpdateFrequency = 160;
             nativeWindowSettings.Title = "TGameToolkit App";
             nativeWindowSettings.Location = new Vector2i(0,0);
+            nativeWindowSettings.ClientSize = (1000, 1000);
             var app = new GuiWindow(gameWindowSettings, nativeWindowSettings);
             app.Run();
         }

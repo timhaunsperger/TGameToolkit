@@ -3,12 +3,12 @@ using OpenTK.Mathematics;
 
 namespace TGameToolkit.Drawing;
 
-public class Shader
+public class Shader : IDisposable
 {
     private readonly int _handle;
     private readonly Dictionary<string, int> _uniformLocations;
 
-    public static readonly Shader BasicShader = new Shader(
+    public static readonly Shader UiShader = new Shader(
         "Shaders/UI.vert", "Shaders/UI.frag");
 
     public Shader(string vertexPath, string fragmentPath)
@@ -85,9 +85,9 @@ public class Shader
         GL.UseProgram(_handle);
     }
     
-    private bool _disposedValue = false;
+    private bool _disposedValue;
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (!_disposedValue)
         {
@@ -99,13 +99,11 @@ public class Shader
 
     ~Shader()
     {
-        if (_disposedValue == false)
-        {
-            Console.WriteLine("GPU Resource leak! Call Dispose()");
-        }
+        if (_disposedValue) return;
+        Console.WriteLine("GPU Resource leak! Call Dispose()");
+        Dispose();
     }
-
-
+    
     public void Dispose()
     {
         Dispose(true);

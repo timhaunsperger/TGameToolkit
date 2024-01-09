@@ -77,9 +77,8 @@ public class Camera : GameObject
         Up = Vector3.Normalize(Vector3.Cross(Right, Front));
     }
     
-    public Camera(Vector3 position, float aspectRatio)
+    public Camera()
     {
-        Pos = position;
-        AspectRatio = aspectRatio;
+        Pos = Vector3.Zero;
     }
 }

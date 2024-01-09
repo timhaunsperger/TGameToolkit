@@ -1,10 +1,12 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using TGameToolkit.Drawing;
+using TGameToolkit.Lighting;
 using TGameToolkit.Objects;
 
 namespace TGameToolkit.Attributes;
 
-public abstract class RenderMesh : ObjectAttribute
+public class RenderMesh : ObjectAttribute
 {
 
     /// <summary>
@@ -23,17 +25,19 @@ public abstract class RenderMesh : ObjectAttribute
     private int _vbo;
     private int _ebo;
 
+    private Vector3d _pos = Vector3d.Zero;
+
     private Shader _shader;
-    private Texture _texture;
-    private Camera _camera;
+    private Material _material;
     
-    protected RenderMesh(GameObject parent, Camera camera, Shader shader, Texture texture, double[] vertices, uint[] indices) : base(parent)
+    public RenderMesh(
+        GameObject parent, Shader shader, Material material, double[] vertices, uint[] indices) 
+        : base(parent)
     {
         _shader = shader;
-        _texture = texture;
+        _material = material;
         _vertices = vertices;
         _indices = indices;
-        _camera = camera;
         Init();
     }
     
@@ -55,7 +59,7 @@ public abstract class RenderMesh : ObjectAttribute
         // Set vertex indices
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
         GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
-        Console.Write(_indices.Length);
+
         // Set vertex data
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
         GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(double), _vertices, BufferUsageHint.StaticDraw);
@@ -78,6 +82,18 @@ public abstract class RenderMesh : ObjectAttribute
     
     public override void Update(double deltaTime)
     {
+        if (_pos != Parent.Pos)
+        {
+            var delta = Parent.Pos - _pos;
+            for (int i = 0; i < _vertices.Length; i+=8)
+            {
+                _vertices[i] = delta.X + _vertices[i];
+                _vertices[i+1] = delta.Y + _vertices[i+1];
+                _vertices[i+2] = delta.Z + _vertices[i+2];
+            }
+            _pos = Parent.Pos;
+        }
+        
         Render();
     }
     
@@ -85,16 +101,23 @@ public abstract class RenderMesh : ObjectAttribute
     {
         GL.BindVertexArray(_vao);
         
-        //GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-        //GL.BufferSubData(BufferTarget.ArrayBuffer, 0, _vertices.Length * sizeof(double), _vertices);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+        GL.BufferSubData(BufferTarget.ArrayBuffer, 0, _vertices.Length * sizeof(double), _vertices);
         
-        _texture.Use(TextureUnit.Texture0);
+        _material.Use(_shader);
         
-        _shader.SetMatrix4("view", _camera.GetViewMatrix());
-        _shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
-        _shader.SetVector3("viewPos", _camera.Pos);
+        _shader.SetMatrix4("view", Scene.GameCamera.GetViewMatrix());
+        _shader.SetMatrix4("projection", Scene.GameCamera.GetProjectionMatrix());
+        _shader.SetVector3("viewPos", Scene.GameCamera.Pos);
+        _shader.SetInt("numLights", Scene.Lights.Count);
+        
+        for (int i = 0; i < Scene.Lights.Count; i++)
+        {
+            Scene.Lights[i].Use(_shader, i);
+        }
         _shader.Use();
 
         GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
     }
 }
+

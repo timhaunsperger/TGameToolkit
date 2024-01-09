@@ -16,7 +16,7 @@ public class Checkbox : Element
     public Checkbox( 
         GuiWindow window, Vector2i pos, int size, Vector4i? color = null,
         AlignMode align = AlignMode.Default) 
-        : base(window, pos, Shader.BasicShader, Texture.Blank, align, (size, size))
+        : base(window, pos, Shader.UiShader, Texture.Blank, align, (size, size))
     {
         BaseTex = Texture.Box(color ?? Theme.Base, size, size, Theme.Highlight2, 1 );
         CheckTex = Texture.Box(Theme.White, size / 2, size / 2, Theme.Blank, size / 10);

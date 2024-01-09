@@ -36,7 +36,7 @@ public class Slider : Element
         bool intSteps = true,
         bool label = true,
         AlignMode align = AlignMode.Default)
-        : base(window, pos, Shader.BasicShader, Texture.Blank, align, size)
+        : base(window, pos, Shader.UiShader, Texture.Blank, align, size)
     {
         _intSteps = intSteps;
         _min = min;
@@ -55,11 +55,11 @@ public class Slider : Element
 
         var centerY = GetCenterYOffset();
         AddChild("bar", new Element(
-            window, (markerPos, centerY), Shader.BasicShader, barTex, AlignMode.CenterLeft, (size.X - markerPos, size.Y / 2)));
+            window, (markerPos, centerY), Shader.UiShader, barTex, AlignMode.CenterLeft, (size.X - markerPos, size.Y / 2)));
         AddChild("slideBar", new Element(
-            window, (0, centerY), Shader.BasicShader, slideTex, AlignMode.CenterLeft, (markerPos, size.Y / 2)));
+            window, (0, centerY), Shader.UiShader, slideTex, AlignMode.CenterLeft, (markerPos, size.Y / 2)));
         AddChild("marker", new Element(
-            window, (markerPos, centerY), Shader.BasicShader, markerTex, AlignMode.Center));
+            window, (markerPos, centerY), Shader.UiShader, markerTex, AlignMode.Center));
         if (label)
         {
             AddChild("label", new Label(

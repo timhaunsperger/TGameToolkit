@@ -101,7 +101,7 @@ public class Element
         Window = window;
         Align = align;
         _pos = pos ?? (0, 0);
-        _shader = shader ?? Shader.BasicShader;
+        _shader = shader ?? Shader.UiShader;
         Tex = texture ?? Texture.Blank;
         _size = size ?? new Vector2i(Tex.Width, Tex.Height);
         AnchorPoint = anchorPoint ?? new Vector2(0, 0);

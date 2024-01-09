@@ -46,7 +46,7 @@ public class Texture
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
         GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureWrapS, (int)TextureParameterName.ClampToBorder);
         GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureWrapR, (int)TextureParameterName.ClampToBorder);
-        GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureBorderColor, new float[]{0,0,0,0});
+        GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureBorderColor, new float[]{0,0,0,255});
         GL.TexImage2D(
             TextureTarget.Texture2D,
             0,

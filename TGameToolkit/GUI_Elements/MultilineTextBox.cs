@@ -131,7 +131,7 @@
 //                         "HighlightBox" + i, 
 //                         new Element(
 //                             Window, (boxPos, _lineHeight * (highlightStartLine + i)), 
-//                             Shader.BasicShader, CursorTexHighlight, 
+//                             Shader.UiShader, CursorTexHighlight, 
 //                             AlignMode.UpperLeft, (boxWidth, _lineHeight)));
 //                 }
 //             }

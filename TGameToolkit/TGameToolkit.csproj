@@ -27,7 +27,7 @@
       <None Update="GUI_Elements\Text\OpenSans-Medium.ttf">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="Shaders\basic.frag">
+      <None Update="Shaders\lighting.frag">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="Shaders\basic.vert">

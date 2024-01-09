@@ -16,7 +16,7 @@ public class Button : Element
     public Button( 
         GuiWindow window, Vector2i pos, Vector2i size, string label = "", Vector4i? color = null,
         AlignMode align = AlignMode.Default, int labelSize = 14) 
-        : base(window, pos, Shader.BasicShader, Texture.Blank, align, size)
+        : base(window, pos, Shader.UiShader, Texture.Blank, align, size)
     {
         BaseTex = Texture.Box(color ??Theme.Base, size);
         HoverTex = Texture.Box(Theme.Highlight1, size);
@@ -27,7 +27,7 @@ public class Button : Element
         {
             var labelTex = TextGenerator.GetStringTex(label, labelSize == 0 ? size.Y / 2 : labelSize, (255, 255, 255, 255));
             var labelPos = BoundingBox.Min + (size.X / 2, size.Y / 2) - pos;
-            var labelElement = new Element(window, labelPos, Shader.BasicShader, labelTex, align: AlignMode.Center);
+            var labelElement = new Element(window, labelPos, Shader.UiShader, labelTex, align: AlignMode.Center);
             AddChild("label", labelElement);
         }
         

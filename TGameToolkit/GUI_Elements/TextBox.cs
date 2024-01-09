@@ -37,7 +37,7 @@ public class TextBox : Element
     public Action<Element, string> OnTextUpdate = (e, s) => { };
     public TextBox(GuiWindow window, Vector2i pos, Vector2i size, AlignMode align = AlignMode.Default, 
         Texture? boxTex = null, Vector4i? textColor = null, string defaultText = "", int textSize = 0, int capacity = 1000) 
-        : base(window, pos, Shader.BasicShader, boxTex ?? Texture.Box(Theme.Background, size), align, size)
+        : base(window, pos, Shader.UiShader, boxTex ?? Texture.Box(Theme.Background, size), align, size)
     {
         // Set Actions
         OnMouseClick = ClickAction;
@@ -58,13 +58,13 @@ public class TextBox : Element
         
         TextWriter = new Element(
             window, new Vector2i(BoundingBox.Min.X - Pos.X + Padding, (int)BoundingBox.Center.Y - Pos.Y), 
-            Shader.BasicShader, defaultTex, AlignMode.CenterLeft, (BoxWidth, defaultTex.Height));
+            Shader.UiShader, defaultTex, AlignMode.CenterLeft, (BoxWidth, defaultTex.Height));
         TextWriter.SetTexCoords(0, BoxWidth / (float)defaultTex.Width);
 
         // Generate cursor elements and textures
         CursorTexStandard = Texture.Box(TextColor, int.Max(textSize / 14, 1), (int)(_textSize * 1.2));
         CursorTexHighlight = Texture.Box((50, 50, 255, 100), BoxWidth, (int)(_textSize * 1.2));
-        Cursor = new Element(window, new Vector2i(0, 0), Shader.BasicShader, CursorTexStandard, AlignMode.CenterLeft);
+        Cursor = new Element(window, new Vector2i(0, 0), Shader.UiShader, CursorTexStandard, AlignMode.CenterLeft);
         AddChild("textWriter", TextWriter);
     }
 
