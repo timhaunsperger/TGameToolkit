@@ -7,7 +7,7 @@ namespace TGameToolkit.GUI_Elements;
 
 public class DragBox : Element
 {
-    public DragBox(GuiWindow window, Vector2i pos, Vector2i size, AlignMode align = AlignMode.Default) 
+    public DragBox(AppWindow window, Vector2i pos, Vector2i size, AlignMode align = AlignMode.Default) 
         : base(window, pos, size:size, align:align)
     {
         Flags.Add("Invisible");

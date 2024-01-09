@@ -13,7 +13,7 @@ namespace TGameToolkit.GUI_Elements;
 public class Element
 {
     // Element data
-    public readonly GuiWindow Window;
+    public readonly AppWindow Window;
     private Vector2i _pos;
     private Vector2i _size;
     public Vector2 AnchorPoint;
@@ -90,7 +90,7 @@ public class Element
     /// <param name="size">Vector representing size of GUI element bounding box.</param>
     /// <param name="anchorPoint">Position in normalized window space to anchor element, only used if element is root.</param>
     public Element(
-        GuiWindow window,
+        AppWindow window,
         Vector2i? pos = null,
         Shader? shader = null,
         Texture? texture = null,

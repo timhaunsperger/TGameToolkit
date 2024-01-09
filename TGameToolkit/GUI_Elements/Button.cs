@@ -14,7 +14,7 @@ public class Button : Element
     public Action OnPress = () => { };
     
     public Button( 
-        GuiWindow window, Vector2i pos, Vector2i size, string label = "", Vector4i? color = null,
+        AppWindow window, Vector2i pos, Vector2i size, string label = "", Vector4i? color = null,
         AlignMode align = AlignMode.Default, int labelSize = 14) 
         : base(window, pos, Shader.UiShader, Texture.Blank, align, size)
     {

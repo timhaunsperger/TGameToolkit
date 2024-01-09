@@ -12,7 +12,7 @@ public class Panel : Element
     private readonly int _padding = 5;
     private int _netElementHeight;
     
-    public Panel(GuiWindow window, Vector2i pos, int width, string title, AlignMode align = AlignMode.Default,
+    public Panel(AppWindow window, Vector2i pos, int width, string title, AlignMode align = AlignMode.Default,
     Vector4i? titleBarColor = null, Vector4i? paneColor = null, int slotSize = 24) 
         : base(window, pos, size:(width, slotSize + 5), align:align)
     {

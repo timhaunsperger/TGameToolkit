@@ -26,7 +26,7 @@ public class Slider : Element
     public readonly Action OnUpdate = () => { };
     
     public Slider(
-        GuiWindow window, Vector2i pos, Vector2i size, 
+        AppWindow window, Vector2i pos, Vector2i size, 
         float min,
         float max,
         float defVal,

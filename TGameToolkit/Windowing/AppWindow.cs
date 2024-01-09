@@ -15,7 +15,7 @@ namespace TGameToolkit.Windowing;
 
 
 
-public class GuiWindow : GameWindow
+public class AppWindow : GameWindow
 {
     public List<Element> RootElements = new ();
     public List<Element> DisposedElements = new ();
@@ -24,7 +24,7 @@ public class GuiWindow : GameWindow
 
     public bool Paused = false;
     
-    public GuiWindow(GameWindowSettings gameSettings, NativeWindowSettings nativeSettings) 
+    public AppWindow(GameWindowSettings gameSettings, NativeWindowSettings nativeSettings) 
         : base(gameSettings, nativeSettings)
     {
         Scene.GameCamera.AspectRatio = ClientSize.X / (float)ClientSize.Y;
@@ -150,24 +150,24 @@ public class GuiWindow : GameWindow
         // panel.AddElement(new TextBox(this, Vector2i.Zero, (100, panel.SlotHeight)), "TEXT BOX");
         // panel.AddElement(new Checkbox(this, Vector2i.Zero, panel.SlotHeight), "checkbox");
         // RootElements.Add(panel);
-        var rand = new Random();
-        for (int i = 0; i < 1; i++)
-        {
-            var light = new GameObject(){Pos = (MathF.Cos(i) * 5, (float)rand.NextDouble() * 5f, MathF.Sin(i) * 5)};
-            Scene.GameObjects.Add(light);
-            new PointLight(light);
-            new CubePrimitive(
-                light,
-                new Shader("Shaders/basic.vert", "Shaders/lighting.frag"),
-                new Material() { Tex = Texture.Box((255, 255, 255, 255), 100, 100), AmbientStrength = 10 });
-        }
-        
-        var cube = new GameObject(){Pos = (0, -2, 3)};
-        new CubePrimitive(
-            cube, 
-            new Shader("Shaders/basic.vert", "Shaders/lighting.frag"),
-            new Material());
-        Scene.GameObjects.Add(cube);
+        // var rand = new Random();
+        // for (int i = 0; i < 1; i++)
+        // {
+        //     var light = new GameObject(){Pos = (MathF.Cos(i) * 5, (float)rand.NextDouble() * 5f, MathF.Sin(i) * 5)};
+        //     Scene.GameObjects.Add(light);
+        //     new PointLight(light);
+        //     new CubePrimitive(
+        //         light,
+        //         new Shader("Shaders/basic.vert", "Shaders/lighting.frag"),
+        //         new Material() { Tex = Texture.Box((255, 255, 255, 255), 100, 100), AmbientStrength = 10 });
+        // }
+        //
+        // var cube = new GameObject(){Pos = (0, -2, 3)};
+        // new CubePrimitive(
+        //     cube, 
+        //     new Shader("Shaders/basic.vert", "Shaders/lighting.frag"),
+        //     new Material());
+        // Scene.GameObjects.Add(cube);
         
         // var cube2 = new GameObject(){Pos = (0, -2, 3)};
         // new CubePrimitive(

@@ -14,7 +14,7 @@ public class Checkbox : Element
     public Action OnPress = () => { };
     
     public Checkbox( 
-        GuiWindow window, Vector2i pos, int size, Vector4i? color = null,
+        AppWindow window, Vector2i pos, int size, Vector4i? color = null,
         AlignMode align = AlignMode.Default) 
         : base(window, pos, Shader.UiShader, Texture.Blank, align, (size, size))
     {

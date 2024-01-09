@@ -35,7 +35,7 @@ public class TextBox : Element
 
     public Action<Element, string> OnTextSubmit = (e, s) => { };
     public Action<Element, string> OnTextUpdate = (e, s) => { };
-    public TextBox(GuiWindow window, Vector2i pos, Vector2i size, AlignMode align = AlignMode.Default, 
+    public TextBox(AppWindow window, Vector2i pos, Vector2i size, AlignMode align = AlignMode.Default, 
         Texture? boxTex = null, Vector4i? textColor = null, string defaultText = "", int textSize = 0, int capacity = 1000) 
         : base(window, pos, Shader.UiShader, boxTex ?? Texture.Box(Theme.Background, size), align, size)
     {

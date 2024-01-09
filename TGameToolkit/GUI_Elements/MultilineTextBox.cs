@@ -9,7 +9,7 @@
 //     private int _lineHeight;
 //     private List<int>? _lineBreaks;
 //     
-//     public MultilineTextBox(GuiWindow window, Vector2i pos, Vector2i size, AlignMode align = AlignMode.Default, 
+//     public MultilineTextBox(AppWindow window, Vector2i pos, Vector2i size, AlignMode align = AlignMode.Default, 
 //         Shader? shader = null, Tex? boxTex = null, Vector4i? textColor = null, 
 //         string defaultText = "defaultText", int textSize = 14, int capacity = 1000) 
 //         : base(window, pos, size, align, boxTex, textColor)

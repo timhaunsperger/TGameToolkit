@@ -7,7 +7,7 @@ namespace TGameToolkit.GUI_Elements;
 public static class Debug
 {
     public static List<Element> DebugElements = new ();
-    public static void DrawRect(GuiWindow window, Vector2i min, Vector2i max)
+    public static void DrawRect(AppWindow window, Vector2i min, Vector2i max)
     {
         var rect = new Element(
             window, 
@@ -17,7 +17,7 @@ public static class Debug
         DebugElements.Add(rect);
     }
     
-    public static void DrawRect(GuiWindow window, Box2i box)
+    public static void DrawRect(AppWindow window, Box2i box)
     {
         DrawRect(window, box.Min, box.Max);
     }

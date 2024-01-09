@@ -22,7 +22,7 @@ public static unsafe class Clipboard
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern bool CloseClipboard();
 
-    public static string GetClipboard(GuiWindow window)
+    public static string GetClipboard(AppWindow window)
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return "";
         IntPtr hWnd = GLFW.GetWin32Window(window.WindowPtr);
@@ -51,7 +51,7 @@ public static unsafe class Clipboard
         return Encoding.Unicode.GetString(data);
     }
     
-    public static void SetClipboard(GuiWindow window, string text)
+    public static void SetClipboard(AppWindow window, string text)
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
         IntPtr hWnd = GLFW.GetWin32Window(window.WindowPtr);

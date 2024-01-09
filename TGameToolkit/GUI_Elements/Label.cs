@@ -9,7 +9,7 @@ public class Label : Element
 {
     private int _labelSize;
     
-    public Label(GuiWindow window, Vector2i pos, string label, int labelSize = 14, AlignMode align = AlignMode.CenterLeft) 
+    public Label(AppWindow window, Vector2i pos, string label, int labelSize = 14, AlignMode align = AlignMode.CenterLeft) 
         : base(window, pos, align:align)
     {
         _labelSize = labelSize;
