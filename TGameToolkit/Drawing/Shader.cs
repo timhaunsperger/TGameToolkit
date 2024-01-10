@@ -1,13 +1,20 @@
 ﻿using System.Reflection;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using TGameToolkit.Utils;
 
 namespace TGameToolkit.Drawing;
 
 public class Shader : IDisposable
 {
     private readonly int _handle;
-    private readonly Dictionary<string, int> _uniformLocations;
+    private readonly Dictionary<string, int> _uniformLocations = new ();
+    
+    /// <summary>
+    /// Stores all vertex attributes, value format: (location (in shader), offset, size)
+    /// </summary>
+    public readonly Dictionary<string, AttribInfo> Attributes = new ();
+    public readonly int AttribStride;
 
     public static readonly Shader UiShader = BuiltIn(
         "TGameToolkit.Shaders.UI.vert", "TGameToolkit.Shaders.UI.frag");
@@ -17,14 +24,14 @@ public class Shader : IDisposable
     private static Shader BuiltIn(string vertRsc, string fragRsc)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(vertRsc));
+        StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(vertRsc)!);
         string vertSrc = reader.ReadToEnd();
-        reader = new StreamReader(assembly.GetManifestResourceStream(fragRsc));
+        reader = new StreamReader(assembly.GetManifestResourceStream(fragRsc)!);
         string fragSrc = reader.ReadToEnd();
         return new Shader(vertSrc, fragSrc);
     }
 
-    public Shader GenShader(string vertexPath, string fragmentPath)
+    public static Shader GenShader(string vertexPath, string fragmentPath)
     {
         string vertexShaderSource = File.ReadAllText(vertexPath);
         string fragmentShaderSource = File.ReadAllText(fragmentPath);
@@ -39,6 +46,7 @@ public class Shader : IDisposable
         string infoLogVert = GL.GetShaderInfoLog(vertexShader);
         if (infoLogVert != "")
             Console.WriteLine(infoLogVert);
+        
         var fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
         GL.ShaderSource(fragmentShader, fragmentShaderSource);
         GL.CompileShader(fragmentShader);
@@ -57,13 +65,28 @@ public class Shader : IDisposable
         GL.DeleteShader(vertexShader);
         
         GL.GetProgram(_handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
-        _uniformLocations = new Dictionary<string, int>();
         for (var i = 0; i < numberOfUniforms; i++)
         {
             var key = GL.GetActiveUniform(_handle, i, out _, out _);
             var location = GL.GetUniformLocation(_handle, key);
             _uniformLocations.Add(key, location);
         }
+        
+        GL.GetProgram(_handle, GetProgramParameterName.ActiveAttributes, out var numAttributes);
+        var offset = 0;
+        for (var i = 0; i < numAttributes; i++)
+        {
+            var key = GL.GetActiveAttrib(_handle, i, out _, out var type);
+            var location = GL.GetAttribLocation(_handle, key);
+            var size = ShaderUtils.GetTypeComponentNum(type);
+            if (key != null)
+            {
+                Attributes.Add(key, new AttribInfo(location, offset, size));
+            }
+            offset += size;
+        }
+
+        AttribStride = offset;
     }
     
     public int GetAttribLocation(string attribName)
@@ -124,5 +147,12 @@ public class Shader : IDisposable
     {
         Dispose(true);
         GC.SuppressFinalize(this);
+    }
+    
+    public struct AttribInfo(int loc, int offset, int size)
+    {
+        public int Location = loc;
+        public int Offset = offset;
+        public int Size = size;
     }
 }

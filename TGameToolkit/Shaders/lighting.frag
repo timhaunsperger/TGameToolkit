@@ -1,7 +1,7 @@
 #version 460 core
 out vec4 FragColor;
 in vec2 texCoord;
-in vec3 faceNorm;
+in vec3 normal;
 in vec3 fragPos;
 
 uniform sampler2D tex;
@@ -74,13 +74,13 @@ vec3 calcDirLight(DirectionalLight light, vec3 norm, vec3 viewDir){
 void main()
 {
     vec3 light = vec3(0.0);
-    vec3 normal = normalize(faceNorm);
+    vec3 norm = normalize(normal);
     vec3 viewDirection = normalize(viewPos - fragPos);
 
     for (int i = 0; i < numLights; i++) {
-        light += calcPointLight(pointLights[i], normal, viewDirection);
+        light += calcPointLight(pointLights[i], norm, viewDirection);
     }
-    light += calcDirLight(directionalLight, normal, viewDirection) * 0;
+    light += calcDirLight(directionalLight, norm, viewDirection) * 0;
 
     vec4 result = vec4(light, 1.0);
     FragColor = result * texture(tex, texCoord);

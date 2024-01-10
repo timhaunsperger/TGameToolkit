@@ -9,7 +9,7 @@ namespace TGameToolkit.Utils;
 public static class MeshBuilder
 {
     public static RenderMesh GetCubeMesh(
-        int scale = 1, Quaterniond? rotation = null, Material? material = null, Shader? shader = null)
+        float scale = 1, Quaterniond? rotation = null, Material? material = null, Shader? shader = null)
     {
         Vector3d[] vertices =
         {
@@ -45,7 +45,7 @@ public static class MeshBuilder
         };
 
         var vertexData = 
-            GetVertexData(vertices, texCoords, scale, rotation ?? Quaterniond.Identity, indices);
+            GetVertexData(vertices, texCoords, scale, rotation ?? Quaterniond.Identity, indices, shader ?? Shader.LightingShader);
 
         return new RenderMesh(shader ?? Shader.LightingShader, material ?? new Material(), vertexData, indices);
 
@@ -90,15 +90,15 @@ public static class MeshBuilder
         return (vertices, texCoords, indices);
     }
 
-    public static RenderMesh GetPlaneMesh(int resolution = 4, int scale = 1, Vector3? normal = null, Material? mat = null, Shader? shader = null)
+    public static RenderMesh GetPlaneMesh(int resolution = 4, float scale = 1, Vector3? normal = null, Material? mat = null, Shader? shader = null)
     {
         var data = PlaneData(resolution, normal);
-        var vertData = GetVertexData(data.Item1, data.Item2, scale, Quaterniond.Identity, data.Item3);
+        var vertData = GetVertexData(data.Item1, data.Item2, scale, Quaterniond.Identity, data.Item3, shader ?? Shader.LightingShader);
         return new RenderMesh(shader ?? Shader.LightingShader, mat ?? new Material(), vertData, data.Item3);
     }
     
     public static RenderMesh GetNcSphereMesh(
-        int resolution = 2, int scale = 1, Quaterniond? rotation = null, Material? material = null, Shader? shader = null)
+        int resolution = 2, float scale = 1, Quaterniond? rotation = null, Material? material = null, Shader? shader = null)
     {
         var faceVertNum = resolution * resolution;
         var faceIndices = (resolution - 1) * (resolution - 1) * 6;
@@ -124,50 +124,61 @@ public static class MeshBuilder
             vertices[i] = vertices[i].Normalized();
         }
 
-        var vertexData = GetVertexData(vertices, texCoords, scale, rotation ?? Quaterniond.Identity, Vector3d.Zero);
+        var vertexData = GetVertexData(vertices, texCoords, scale, rotation ?? Quaterniond.Identity, Vector3d.Zero, shader ?? Shader.LightingShader);
         
-        return new RenderMesh(shader ?? Shader.LightingShader, material ?? new Material(), vertexData, indices);
+        return new RenderMesh(Shader.LightingShader, material ?? new Material(), vertexData, indices, true);
 
     }
     
     /// <summary>
     /// Construct vertex data array using vertex normals
     /// </summary>
-    public static double[] GetVertexData(Vector3d[] baseVertices, Vector2d[] texCoords, float scale, Quaterniond rotation, Vector3d center)
+    public static double[] GetVertexData(Vector3d[] baseVertices, Vector2d[] texCoords, float scale, Quaterniond rotation, Vector3d center, Shader shader)
     {
         var output = new double[baseVertices.Length * 8];
+
+        var posOffset = shader.Attributes["aPosition"].Offset;
+        var texOffset = shader.Attributes["aTexCoord"].Offset;
+        var normOffset = shader.Attributes["aNormal"].Offset;
+        
         for (int i = 0; i < baseVertices.Length; i++)
         {
-            var vert = baseVertices[i] * scale;
+            var vert = rotation * baseVertices[i] * scale;
             var norm = (vert - center).Normalized();
             
-            output[i * 8] = vert.X;
-            output[i * 8 + 1] = vert.Y;
-            output[i * 8 + 2] = vert.Z;
-            output[i * 8 + 3] = Math.Clamp(texCoords[i].X, 0.01, 0.99);;
-            output[i * 8 + 4] = Math.Clamp(texCoords[i].Y, 0.01, 0.99);;
-            output[i * 8 + 5] = norm.X;
-            output[i * 8 + 6] = norm.Y;
-            output[i * 8 + 7] = norm.Z;
+            output[i * 8 + posOffset] = vert.X;
+            output[i * 8 + posOffset + 1] = vert.Y;
+            output[i * 8 + posOffset + 2] = vert.Z;
+            output[i * 8 + texOffset] = Math.Clamp(texCoords[i].X, 0.01, 0.99);
+            output[i * 8 + texOffset + 1] = Math.Clamp(texCoords[i].Y, 0.01, 0.99);
+            output[i * 8 + normOffset] = norm.X;
+            output[i * 8 + normOffset + 1] = norm.Y;
+            output[i * 8 + normOffset + 2] = norm.Z;
         }
-
         return output;
     }
     
     /// <summary>
     /// Construct vertex data array using face normals
     /// </summary>
-    public static double[] GetVertexData(Vector3d[] baseVertices, Vector2d[] texCoords, float scale, Quaterniond rotation, uint[] indices)
+    public static double[] GetVertexData(
+        Vector3d[] baseVertices, Vector2d[] texCoords, float scale, Quaterniond rotation, uint[] indices, 
+        Shader shader)
     {
         var output = new double[baseVertices.Length * 8];
+        
+        var posOffset = shader.Attributes["aPosition"].Offset;
+        var texOffset = shader.Attributes["aTexCoord"].Offset;
+        var normOffset = shader.Attributes["aNormal"].Offset;
+        
         for (int i = 0; i < baseVertices.Length; i++)
         {
-            var vert = baseVertices[i] * scale;
-            output[i * 8] = vert.X;
-            output[i * 8 + 1] = vert.Y;
-            output[i * 8 + 2] = vert.Z;
-            output[i * 8 + 3] = Math.Clamp(texCoords[i].X, 0.01, 0.99);
-            output[i * 8 + 4] = Math.Clamp(texCoords[i].Y, 0.01, 0.99);
+            var vert = rotation * baseVertices[i] * scale;
+            output[i * 8 + posOffset] = vert.X;
+            output[i * 8 + posOffset + 1] = vert.Y;
+            output[i * 8 + posOffset + 2] = vert.Z;
+            output[i * 8 + texOffset] = Math.Clamp(texCoords[i].X, 0.01, 0.99);
+            output[i * 8 + texOffset + 1] = Math.Clamp(texCoords[i].Y, 0.01, 0.99);
         }
 
         for (int i = 0; i < indices.Length; i += 3)
@@ -182,9 +193,17 @@ public static class MeshBuilder
             
             var norm = Vector3d.Cross(v0 - v1, v2 - v1).Normalized();
 
-            output[ind0 * 8 + 5] = norm.X; output[ind0 * 8 + 6] = norm.Y; output[ind0 * 8 + 7] = norm.Z;
-            output[ind1 * 8 + 5] = norm.X; output[ind1 * 8 + 6] = norm.Y; output[ind1 * 8 + 7] = norm.Z;
-            output[ind2 * 8 + 5] = norm.X; output[ind2 * 8 + 6] = norm.Y; output[ind2 * 8 + 7] = norm.Z;
+            output[ind0 * 8 + normOffset] = norm.X; 
+            output[ind0 * 8 + normOffset + 1] = norm.Y; 
+            output[ind0 * 8 + normOffset + 2] = norm.Z;
+            
+            output[ind1 * 8 + normOffset] = norm.X; 
+            output[ind1 * 8 + normOffset + 1] = norm.Y; 
+            output[ind1 * 8 + normOffset + 2] = norm.Z;
+            
+            output[ind2 * 8 + normOffset] = norm.X; 
+            output[ind2 * 8 + normOffset + 1] = norm.Y; 
+            output[ind2 * 8 + normOffset + 2] = norm.Z;
         }
 
         return output;
