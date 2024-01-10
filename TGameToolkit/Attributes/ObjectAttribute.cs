@@ -4,13 +4,7 @@ namespace TGameToolkit.Attributes;
 
 public abstract class ObjectAttribute
 {
-    public GameObject Parent;
-
-    protected ObjectAttribute(GameObject parent)
-    {
-        Parent = parent;
-        parent.AttachAttribute(this);
-    }
+    public GameObject Parent = GameObject.baseObj;
     
     public abstract void Update(double deltaTime);
 }

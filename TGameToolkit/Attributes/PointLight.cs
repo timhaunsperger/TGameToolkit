@@ -14,7 +14,7 @@ public class PointLight : ObjectAttribute
     public float LinearAtten = 0f;
     public float QuadraticAtten = 1f;
     
-    public PointLight(GameObject parent) : base(parent)
+    public PointLight()
     {
         Scene.Lights.Add(this);
     }

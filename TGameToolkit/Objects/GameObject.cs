@@ -5,6 +5,8 @@ namespace TGameToolkit.Objects;
 
 public class GameObject
 {
+    internal static GameObject baseObj = new ();
+    
     public Vector3 Pos = Vector3.Zero;
     public List<ObjectAttribute> Attributes = new ();
 
@@ -19,5 +21,6 @@ public class GameObject
     public void AttachAttribute(ObjectAttribute attribute)
     {
         Attributes.Add(attribute);
+        attribute.Parent = this;
     }
 }

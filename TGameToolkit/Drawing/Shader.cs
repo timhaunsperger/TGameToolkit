@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using System.Reflection;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 namespace TGameToolkit.Drawing;
@@ -8,21 +9,36 @@ public class Shader : IDisposable
     private readonly int _handle;
     private readonly Dictionary<string, int> _uniformLocations;
 
-    public static readonly Shader UiShader = new Shader(
-        "Shaders/UI.vert", "Shaders/UI.frag");
+    public static readonly Shader UiShader = BuiltIn(
+        "TGameToolkit.Shaders.UI.vert", "TGameToolkit.Shaders.UI.frag");
+    public static readonly Shader LightingShader = BuiltIn(
+        "TGameToolkit.Shaders.basic.vert", "TGameToolkit.Shaders.lighting.frag");
 
-    public Shader(string vertexPath, string fragmentPath)
+    private static Shader BuiltIn(string vertRsc, string fragRsc)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(vertRsc));
+        string vertSrc = reader.ReadToEnd();
+        reader = new StreamReader(assembly.GetManifestResourceStream(fragRsc));
+        string fragSrc = reader.ReadToEnd();
+        return new Shader(vertSrc, fragSrc);
+    }
+
+    public Shader GenShader(string vertexPath, string fragmentPath)
     {
         string vertexShaderSource = File.ReadAllText(vertexPath);
         string fragmentShaderSource = File.ReadAllText(fragmentPath);
-        
+        return new Shader(vertexShaderSource, fragmentShaderSource);
+    }
+    
+    private Shader(string vertexShaderSource, string fragmentShaderSource)
+    {
         var vertexShader = GL.CreateShader(ShaderType.VertexShader);
         GL.ShaderSource(vertexShader, vertexShaderSource);
         GL.CompileShader(vertexShader);
         string infoLogVert = GL.GetShaderInfoLog(vertexShader);
         if (infoLogVert != "")
             Console.WriteLine(infoLogVert);
-        
         var fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
         GL.ShaderSource(fragmentShader, fragmentShaderSource);
         GL.CompileShader(fragmentShader);

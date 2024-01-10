@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using System.Reflection;
+using OpenTK.Mathematics;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
@@ -19,7 +20,8 @@ public static class TextGenerator
 
     static TextGenerator()
     {
-        _defaultFont = _fonts.Add("GUI_Elements/Text/OpenSans-Medium.ttf");
+        var assembly = Assembly.GetExecutingAssembly();
+        _defaultFont = _fonts.Add(assembly.GetManifestResourceStream("TGameToolkit.GUI_Elements.Text.OpenSans-Medium.ttf"));
     }
     
     public static void AddFont(string fontPath)

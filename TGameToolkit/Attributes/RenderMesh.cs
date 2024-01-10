@@ -30,9 +30,7 @@ public class RenderMesh : ObjectAttribute
     private Shader _shader;
     private Material _material;
     
-    public RenderMesh(
-        GameObject parent, Shader shader, Material material, double[] vertices, uint[] indices) 
-        : base(parent)
+    public RenderMesh(Shader shader, Material material, double[] vertices, uint[] indices)
     {
         _shader = shader;
         _material = material;

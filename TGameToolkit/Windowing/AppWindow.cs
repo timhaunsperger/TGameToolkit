@@ -162,12 +162,6 @@ public class AppWindow : GameWindow
         //         new Material() { Tex = Texture.Box((255, 255, 255, 255), 100, 100), AmbientStrength = 10 });
         // }
         //
-        // var cube = new GameObject(){Pos = (0, -2, 3)};
-        // new CubePrimitive(
-        //     cube, 
-        //     new Shader("Shaders/basic.vert", "Shaders/lighting.frag"),
-        //     new Material());
-        // Scene.GameObjects.Add(cube);
         
         // var cube2 = new GameObject(){Pos = (0, -2, 3)};
         // new CubePrimitive(

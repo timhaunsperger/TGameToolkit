@@ -17,21 +17,26 @@
     </ItemGroup>
     
     <ItemGroup>
-      <None Update="Shaders\UI.frag">
+      <None Remove="Shaders\UI.frag" />
+      <EmbeddedResource Include="Shaders\UI.frag">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Shaders\UI.vert">
+      </EmbeddedResource>
+      <None Remove="Shaders\UI.vert" />
+      <EmbeddedResource Include="Shaders\UI.vert">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="GUI_Elements\Text\OpenSans-Medium.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Shaders\lighting.frag">
+      </EmbeddedResource>
+      <None Remove="Shaders\lighting.frag" />
+      <EmbeddedResource Include="Shaders\lighting.frag">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Shaders\basic.vert">
+      </EmbeddedResource>
+      <None Remove="Shaders\basic.vert" />
+      <EmbeddedResource Include="Shaders\basic.vert">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+      </EmbeddedResource>
+      <None Remove="GUI_Elements\Text\OpenSans-Medium.ttf" />
+      <EmbeddedResource Include="GUI_Elements\Text\OpenSans-Medium.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>
