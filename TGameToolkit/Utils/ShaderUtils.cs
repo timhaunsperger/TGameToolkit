@@ -67,19 +67,6 @@ public static class ShaderUtils
             vertices[i * stride + offset+1] = data[i].Y;
         }
     }
-    
-    public static void SetVertexAttribute(string attribName, Shader shader, ref double[] vertices, double[] data, int vertIndex)
-    {
-        
-        var stride = shader.AttribStride;
-        var offset = shader.Attributes[attribName].Offset + vertIndex * stride;
-        var size = shader.Attributes[attribName].Size;
-        
-        for (int i = 0; i < size; i++)
-        {
-            vertices[offset + i] = data[i];
-        }
-    }
     /// <summary>
     /// Gets number of elements in type.
     /// </summary>

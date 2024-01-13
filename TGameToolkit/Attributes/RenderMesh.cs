@@ -7,7 +7,7 @@ using TGameToolkit.Utils;
 
 namespace TGameToolkit.Attributes;
 
-public class RenderMesh : ObjectAttribute
+public class RenderMesh
 {
 
     /// <summary>
@@ -31,18 +31,14 @@ public class RenderMesh : ObjectAttribute
 
     private Vector3d _pos = Vector3d.Zero;
 
-    private Shader _shader;
-    private Material _material;
-
-    private bool _centerNormal;
+    public Shader Shader { get; }
+    public Dictionary<string, Material> Materials = new ();
     
-    public RenderMesh(Shader shader, Material material, double[] vertices, uint[] indices, bool centerNorm = false)
+    public RenderMesh(Shader shader, double[] vertices, uint[] indices)
     {
-        _shader = shader;
-        _material = material;
+        Shader = shader;
         _vertices = vertices;
         _indices = indices;
-        _centerNormal = centerNorm;
         Init();
     }
     
@@ -70,54 +66,50 @@ public class RenderMesh : ObjectAttribute
         GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(double), _vertices, BufferUsageHint.StaticDraw);
         
         // Set attribute pointers to store layout of data in buffers
-        var stride = _shader.AttribStride;
-        foreach (var attrib in _shader.Attributes.Values)
+        var stride = Shader.AttribStride;
+        foreach (var attrib in Shader.Attributes.Values)
         {
             GL.VertexAttribPointer(
                 attrib.Location, attrib.Size, VertexAttribPointerType.Double, false, stride * sizeof(double), attrib.Offset  * sizeof(double));
             GL.EnableVertexAttribArray(attrib.Location);
         }
 
-        _posDataOffset = _shader.Attributes["aPosition"].Offset;
-        _normDataOffset = _shader.Attributes["aNormal"].Offset;
+        _posDataOffset = Shader.Attributes["aPosition"].Offset;
+        Shader.Attributes.TryGetValue("aNormal", out var normAttrib);
+        _normDataOffset = normAttrib.Offset;
     }
 
     public Vector3d[] GetVertices()
     {
-        var vertices = new Vector3d[_vertices.Length / 8];
+        var vertices = new Vector3d[_vertices.Length / Shader.AttribStride];
 
-        for (int i = 0; i < _vertices.Length / 8; i++)
+        for (int i = 0; i < _vertices.Length / Shader.AttribStride; i++)
         {
-            vertices[i] = new Vector3d(_vertices[i * 8], _vertices[i * 8 + 1], _vertices[i * 8 + 2]);
+            var posDataLoc = _posDataOffset + i * Shader.AttribStride;
+            vertices[i] = new Vector3d(_vertices[posDataLoc], _vertices[posDataLoc + 1], _vertices[posDataLoc + 2]);
         }
 
         return vertices;
     }
+
+    public RenderMesh WithMaterial(string id, Material material)
+    {
+        Materials[id] = material;
+        return this;
+    }
     
     public void SetVertices(Vector3d[] vertices, bool updateNormals = true)
     {
-        var stride = _shader.AttribStride;
-        
-        for (int i = 0; i < _vertices.Length / 8; i++)
+        var stride = Shader.AttribStride;
+        var vtxPosOffset = Shader.Attributes["aPosition"].Offset;
+        for (int i = 0; i < vertices.Length; i++)
         {
-            var posDataLoc = i * stride + _posDataOffset;
-            
-            _vertices[posDataLoc] = vertices[i].X;
-            _vertices[posDataLoc + 1] = vertices[i].Y;
-            _vertices[posDataLoc + 2] = vertices[i].Z;
-            
-            if (updateNormals && _centerNormal)
-            {
-                var norm = (vertices[i] - Parent.Pos).Normalized();
-                var normDataLoc = i * stride + _normDataOffset;
-                
-                _vertices[normDataLoc] = norm.X;
-                _vertices[normDataLoc + 1] = norm.Y;
-                _vertices[normDataLoc + 2] = norm.Z;
-            }
+            _vertices[vtxPosOffset + i * stride] = vertices[i].X;
+            _vertices[vtxPosOffset + i * stride + 1] = vertices[i].Y;
+            _vertices[vtxPosOffset + i * stride + 2] = vertices[i].Z;
         }
-        
-        if (updateNormals && !_centerNormal)
+
+        if (updateNormals)
         {
             for (int i = 0; i < _indices.Length; i += 3)
             {
@@ -136,7 +128,7 @@ public class RenderMesh : ObjectAttribute
                 var o1 = _normDataOffset + ind1 * stride;
                 var o2 = _normDataOffset + ind2 * stride;
 
-                var norm = Vector3d.Cross(v0 - v1, v2 - v1).Normalized();
+                var norm = Vector3d.Cross(v0 - v1, v0 - v2).Normalized();
                 _vertices[o0] = norm.X; _vertices[o0 + 1] = norm.Y; _vertices[o0 + 2] = norm.Z;
                 _vertices[o1] = norm.X; _vertices[o1 + 1] = norm.Y; _vertices[o1 + 2] = norm.Z;
                 _vertices[o2] = norm.X; _vertices[o2 + 1] = norm.Y; _vertices[o2 + 2] = norm.Z;
@@ -147,43 +139,32 @@ public class RenderMesh : ObjectAttribute
         GL.BufferSubData(BufferTarget.ArrayBuffer, 0, _vertices.Length * sizeof(double), _vertices);
     }
     
-    public override void Update(double deltaTime)
+    public void SetVertexAttribute(string attribName, double[] data, int vertIndex)
     {
-        if (_pos != Parent.Pos)
-        {
-            var delta = Parent.Pos - _pos;
-            for (int i = 0; i < _vertices.Length; i += _shader.AttribStride)
-            {
-                var posDataLoc = i + _posDataOffset;
-                _vertices[posDataLoc] += delta.X;
-                _vertices[posDataLoc + 1] += delta.Y;
-                _vertices[posDataLoc + 2] += delta.Z;
-            }
-            
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, 0, _vertices.Length * sizeof(double), _vertices);
-            _pos = Parent.Pos;
-        }
+        var offset = Shader.Attributes[attribName].Offset + vertIndex * Shader.AttribStride;
+        var size = Shader.Attributes[attribName].Size;
         
-        Render();
+        for (int i = 0; i < size; i++)
+        {
+            _vertices[offset + i] = data[i];
+        }
     }
     
-    private void Render()
+    public void SetVertexAttribute(string attribName, double data, int vertIndex)
+    {
+        _vertices[Shader.Attributes[attribName].Offset + vertIndex * Shader.AttribStride] = data;
+    }
+    
+    public virtual void Render(Shader? shader = null)
     {
         GL.BindVertexArray(_vao);
-        
-        _material.Use(_shader);
-        
-        _shader.SetMatrix4("view", Scene.GameCamera.GetViewMatrix());
-        _shader.SetMatrix4("projection", Scene.GameCamera.GetProjectionMatrix());
-        _shader.SetVector3("viewPos", Scene.GameCamera.Pos);
-        _shader.SetInt("numLights", Scene.Lights.Count);
-        
-        for (int i = 0; i < Scene.Lights.Count; i++)
+
+        foreach (var material in Materials)
         {
-            Scene.Lights[i].Use(_shader, i);
+            material.Value.Use(Shader, material.Key);
         }
-        _shader.Use();
+        
+        Shader.Use();
 
         GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
     }

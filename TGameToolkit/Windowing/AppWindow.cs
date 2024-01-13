@@ -10,6 +10,7 @@ using TGameToolkit.GUI_Elements;
 using TGameToolkit.Lighting;
 using TGameToolkit.Objects;
 using Debug = TGameToolkit.GUI_Elements.Debug;
+using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
 
 namespace TGameToolkit.Windowing;
 
@@ -34,13 +35,12 @@ public class AppWindow : GameWindow
     protected override void OnResize(ResizeEventArgs e)
     {
         base.OnResize(e);
+        
         foreach (var element in RootElements)
         {
             element.UpdateVertices();
         }
-
-        Scene.GameCamera.AspectRatio = ClientSize.X / (float)ClientSize.Y;
-        GL.Viewport(0, 0, e.Width, e.Height);
+        Scene.Resize(ClientSize);
     }
 
     protected override void OnKeyDown(KeyboardKeyEventArgs e)
@@ -103,7 +103,6 @@ public class AppWindow : GameWindow
     
     protected override void OnRenderFrame(FrameEventArgs args)
     {
-        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         if (RootElements.Count != 0)
         {
             foreach (var element in DisposedElements)
@@ -113,16 +112,10 @@ public class AppWindow : GameWindow
             DisposedElements.Clear();
         }
         
-        GL.Enable(EnableCap.DepthTest);
+        
         foreach (var obj in Scene.GameObjects)
         {
             obj.Update(args.Time);
-        }
-        
-        GL.Disable(EnableCap.DepthTest);
-        foreach (var element in RootElements)
-        {
-            element.Draw();
         }
 
         if (!Paused)
@@ -131,43 +124,32 @@ public class AppWindow : GameWindow
         }
         
         Debug.DebugDraw();
-        base.OnRenderFrame(args);
+        Scene.DrawScene();
         
+        GL.Disable(EnableCap.DepthTest);
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        foreach (var element in RootElements)
+        {
+            element.Draw();
+        }
+
         Context.SwapBuffers();
+        var e = GL.GetError();
+        if (e != ErrorCode.NoError)
+        {
+            Console.Write(e);
+        }
+        
+        base.OnRenderFrame(args);
     }
 
     protected override void OnLoad()
     {
         base.OnLoad();
-        
+        Scene.Resolution = ClientSize;
+        Scene.Load();
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-        
-        // var panel = new Panel(this, (0, 0), 250, "Elements");
-        // panel.AddElement(new Button(this, Vector2i.Zero, (40, panel.SlotHeight), "test"), "Test Button1");
-        // panel.AddElement(new Button(this, Vector2i.Zero, (40, panel.SlotHeight), "test"), "Button2");
-        // panel.AddElement(new Slider(this, Vector2i.Zero, (100, panel.SlotHeight), 0, 10, 5), "slider???");
-        // panel.AddElement(new TextBox(this, Vector2i.Zero, (100, panel.SlotHeight)), "TEXT BOX");
-        // panel.AddElement(new Checkbox(this, Vector2i.Zero, panel.SlotHeight), "checkbox");
-        // RootElements.Add(panel);
-        // var rand = new Random();
-        // for (int i = 0; i < 1; i++)
-        // {
-        //     var light = new GameObject(){Pos = (MathF.Cos(i) * 5, (float)rand.NextDouble() * 5f, MathF.Sin(i) * 5)};
-        //     Scene.GameObjects.Add(light);
-        //     new PointLight(light);
-        //     new CubePrimitive(
-        //         light,
-        //         new Shader("Shaders/basic.vert", "Shaders/lighting.frag"),
-        //         new Material() { Tex = Texture.Box((255, 255, 255, 255), 100, 100), AmbientStrength = 10 });
-        // }
-        //
-        
-        // var cube2 = new GameObject(){Pos = (0, -2, 3)};
-        // new CubePrimitive(
-        //     cube2, 
-        //     new Shader("Shaders/basic.vert", "Shaders/lighting.frag"),
-        //     new Material());
-        // Scene.GameObjects.Add(cube2);
+        GL.ClearColor(0,0,0,0);
     }
 }

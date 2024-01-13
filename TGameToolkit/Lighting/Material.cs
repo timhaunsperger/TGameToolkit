@@ -11,12 +11,12 @@ public class Material()
     public float SpecularStrength = 2f;
     public float Shininess = 64;
 
-    public void Use(Shader shader)
+    public void Use(Shader shader, string id)
     {
         Tex.Use(TextureUnit.Texture0);
-        shader.SetFloat("material.ambient", AmbientStrength);
-        shader.SetFloat("material.diffuse", DiffuseStrength);
-        shader.SetFloat("material.specular", SpecularStrength);
-        shader.SetFloat("material.shininess", Shininess);
+        shader.SetFloat(id + ".ambient", AmbientStrength);
+        shader.SetFloat(id + ".diffuse", DiffuseStrength);
+        shader.SetFloat(id + ".specular", SpecularStrength);
+        shader.SetFloat(id + ".shininess", Shininess);
     }
 }

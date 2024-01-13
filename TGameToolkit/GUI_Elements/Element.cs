@@ -218,11 +218,6 @@ public class Element
     public void UpdateTexture(Texture newTex)
     {
         if (Tex == newTex) { return; }
-        
-        // Must activate shader to set texture units 
-        _shader.Use();
-        
-        _shader.SetInt("texture", _shader.GetAttribLocation("texture"));
 
         if (!Flags.Contains("FixedSize"))
         {

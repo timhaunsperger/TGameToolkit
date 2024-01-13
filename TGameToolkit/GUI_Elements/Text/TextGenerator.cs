@@ -21,7 +21,7 @@ public static class TextGenerator
     static TextGenerator()
     {
         var assembly = Assembly.GetExecutingAssembly();
-        _defaultFont = _fonts.Add(assembly.GetManifestResourceStream("TGameToolkit.GUI_Elements.Text.OpenSans-Medium.ttf"));
+        _defaultFont = _fonts.Add(assembly.GetManifestResourceStream("TGameToolkit.GUI_Elements.Text.OpenSans-Medium.ttf")!);
     }
     
     public static void AddFont(string fontPath)

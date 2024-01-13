@@ -23,7 +23,7 @@ public class Slider : Element
     private readonly float _max;
     private readonly bool _intSteps;
     private readonly bool _label;
-    public readonly Action OnUpdate = () => { };
+    public Action OnUpdate = () => { };
     
     public Slider(
         AppWindow window, Vector2i pos, Vector2i size, 
@@ -99,7 +99,11 @@ public class Slider : Element
 
     private void MouseUpAction(Element e, Vector2i mPos, MouseButtonEventArgs mArgs)
     {
-        Flags.Remove("Active");
+        if (Flags.Contains("Active"))
+        {   
+            Flags.Remove("Active");
+            OnUpdate.Invoke();
+        }
     }
 
     private void UpdateSlider()
@@ -121,7 +125,5 @@ public class Slider : Element
             var label = (Label)Children["label"];
             label.UpdateLabel($"{_val}");
         }
-        
-        OnUpdate.Invoke();
     }
 }

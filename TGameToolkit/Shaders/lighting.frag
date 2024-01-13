@@ -15,7 +15,7 @@ struct Material{
     float shininess;
 };
 
-uniform Material material;
+uniform Material base;
 
 struct PointLight {
     vec3 color;
@@ -50,9 +50,9 @@ vec3 calcPointLight(PointLight light, vec3 norm, vec3 viewDir){
     vec3 diffuse = max(dot(norm, lightDir), 0.0) * lightBase;
 
     vec3 reflectDir = reflect(-lightDir, norm);
-    vec3 specular = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess) * lightBase;
+    vec3 specular = pow(max(dot(viewDir, reflectDir), 0.0), base.shininess) * lightBase;
     
-    return ambient * material.ambient + diffuse * material.diffuse + specular * material.specular;
+    return ambient * base.ambient + diffuse * base.diffuse + specular * base.specular;
 }
 
 vec3 calcDirLight(DirectionalLight light, vec3 norm, vec3 viewDir){
@@ -66,9 +66,9 @@ vec3 calcDirLight(DirectionalLight light, vec3 norm, vec3 viewDir){
 
     vec3 ambient = lightBase;
     vec3 diffuse = max(dot(norm, lightDir), 0.0) * lightBase;
-    vec3 specular = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess) * lightBase;
+    vec3 specular = pow(max(dot(viewDir, reflectDir), 0.0), base.shininess) * lightBase;
 
-    return ambient * material.ambient + diffuse * material.diffuse + specular * material.specular;
+    return ambient * base.ambient + diffuse * base.diffuse + specular * base.specular;
 }
 
 void main()
@@ -80,7 +80,7 @@ void main()
     for (int i = 0; i < numLights; i++) {
         light += calcPointLight(pointLights[i], norm, viewDirection);
     }
-    light += calcDirLight(directionalLight, norm, viewDirection) * 0;
+    light += calcDirLight(directionalLight, norm, viewDirection);
 
     vec4 result = vec4(light, 1.0);
     FragColor = result * texture(tex, texCoord);

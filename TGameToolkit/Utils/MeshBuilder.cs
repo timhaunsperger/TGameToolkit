@@ -8,8 +8,7 @@ namespace TGameToolkit.Utils;
 
 public static class MeshBuilder
 {
-    public static RenderMesh GetCubeMesh(
-        float scale = 1, Quaterniond? rotation = null, Material? material = null, Shader? shader = null)
+    public static RenderMesh GetCubeMesh(Shader shader, float scale = 1, Quaterniond? rotation = null)
     {
         Vector3d[] vertices =
         {
@@ -45,9 +44,9 @@ public static class MeshBuilder
         };
 
         var vertexData = 
-            GetVertexData(vertices, texCoords, scale, rotation ?? Quaterniond.Identity, indices, shader ?? Shader.LightingShader);
+            GetVertexData(vertices, texCoords, scale, rotation ?? Quaterniond.Identity, indices, shader);
 
-        return new RenderMesh(shader ?? Shader.LightingShader, material ?? new Material(), vertexData, indices);
+        return new RenderMesh(shader, vertexData, indices);
 
     }
 
@@ -90,15 +89,15 @@ public static class MeshBuilder
         return (vertices, texCoords, indices);
     }
 
-    public static RenderMesh GetPlaneMesh(int resolution = 4, float scale = 1, Vector3? normal = null, Material? mat = null, Shader? shader = null)
+    public static RenderMesh GetPlaneMesh(Shader shader, int resolution = 4, float scale = 1, Vector3? normal = null)
     {
         var data = PlaneData(resolution, normal);
-        var vertData = GetVertexData(data.Item1, data.Item2, scale, Quaterniond.Identity, data.Item3, shader ?? Shader.LightingShader);
-        return new RenderMesh(shader ?? Shader.LightingShader, mat ?? new Material(), vertData, data.Item3);
+        var vertData = GetVertexData(data.Item1, data.Item2, scale, Quaterniond.Identity, data.Item3, shader);
+        return new RenderMesh(shader, vertData, data.Item3);
     }
     
-    public static RenderMesh GetNcSphereMesh(
-        int resolution = 2, float scale = 1, Quaterniond? rotation = null, Material? material = null, Shader? shader = null)
+    public static RenderMesh GetNcSphereMesh(Shader shader,
+        int resolution = 2, float scale = 1, Quaterniond? rotation = null)
     {
         var faceVertNum = resolution * resolution;
         var faceIndices = (resolution - 1) * (resolution - 1) * 6;
@@ -124,9 +123,9 @@ public static class MeshBuilder
             vertices[i] = vertices[i].Normalized();
         }
 
-        var vertexData = GetVertexData(vertices, texCoords, scale, rotation ?? Quaterniond.Identity, Vector3d.Zero, shader ?? Shader.LightingShader);
+        var vertexData = GetVertexData(vertices, texCoords, scale, rotation ?? Quaterniond.Identity, Vector3d.Zero, shader);
         
-        return new RenderMesh(Shader.LightingShader, material ?? new Material(), vertexData, indices, true);
+        return new RenderMesh(shader, vertexData, indices);
 
     }
     
@@ -138,22 +137,37 @@ public static class MeshBuilder
         var output = new double[baseVertices.Length * 8];
 
         var posOffset = shader.Attributes["aPosition"].Offset;
-        var texOffset = shader.Attributes["aTexCoord"].Offset;
-        var normOffset = shader.Attributes["aNormal"].Offset;
+        var stride = shader.AttribStride;
+        
+        var useNormals = shader.Attributes.ContainsKey("aNormal");
+        var normOffset = 0;
+        if (useNormals)
+        {
+            normOffset = shader.Attributes["aNormal"].Offset;
+        }
         
         for (int i = 0; i < baseVertices.Length; i++)
         {
             var vert = rotation * baseVertices[i] * scale;
             var norm = (vert - center).Normalized();
             
-            output[i * 8 + posOffset] = vert.X;
-            output[i * 8 + posOffset + 1] = vert.Y;
-            output[i * 8 + posOffset + 2] = vert.Z;
-            output[i * 8 + texOffset] = Math.Clamp(texCoords[i].X, 0.01, 0.99);
-            output[i * 8 + texOffset + 1] = Math.Clamp(texCoords[i].Y, 0.01, 0.99);
-            output[i * 8 + normOffset] = norm.X;
-            output[i * 8 + normOffset + 1] = norm.Y;
-            output[i * 8 + normOffset + 2] = norm.Z;
+            output[i * stride + posOffset] = vert.X;
+            output[i * stride + posOffset + 1] = vert.Y;
+            output[i * stride + posOffset + 2] = vert.Z;
+            if (useNormals)
+            {
+                output[i * stride + normOffset] = norm.X;
+                output[i * stride + normOffset + 1] = norm.Y;
+                output[i * stride + normOffset + 2] = norm.Z;
+            }
+        }
+        
+        if (!shader.Attributes.TryGetValue("aTexCoord", out var texAttrib)) return output; 
+        
+        for (int i = 0; i < baseVertices.Length; i++)
+        {
+            output[i * stride + texAttrib.Offset] = Math.Clamp(texCoords[i].X, 0.01, 0.99);
+            output[i * stride + texAttrib.Offset + 1] = Math.Clamp(texCoords[i].Y, 0.01, 0.99);
         }
         return output;
     }
@@ -162,7 +176,7 @@ public static class MeshBuilder
     /// Construct vertex data array using face normals
     /// </summary>
     public static double[] GetVertexData(
-        Vector3d[] baseVertices, Vector2d[] texCoords, float scale, Quaterniond rotation, uint[] indices, 
+        Vector3d[] baseVertices, Vector2d[] texCoords, float scale, Quaterniond rotation, uint[] indices,
         Shader shader)
     {
         var output = new double[baseVertices.Length * 8];
@@ -170,42 +184,52 @@ public static class MeshBuilder
         var posOffset = shader.Attributes["aPosition"].Offset;
         var texOffset = shader.Attributes["aTexCoord"].Offset;
         var normOffset = shader.Attributes["aNormal"].Offset;
+        var stride = shader.AttribStride;
         
         for (int i = 0; i < baseVertices.Length; i++)
         {
             var vert = rotation * baseVertices[i] * scale;
-            output[i * 8 + posOffset] = vert.X;
-            output[i * 8 + posOffset + 1] = vert.Y;
-            output[i * 8 + posOffset + 2] = vert.Z;
-            output[i * 8 + texOffset] = Math.Clamp(texCoords[i].X, 0.01, 0.99);
-            output[i * 8 + texOffset + 1] = Math.Clamp(texCoords[i].Y, 0.01, 0.99);
+            output[i * stride + posOffset] = vert.X;
+            output[i * stride + posOffset + 1] = vert.Y;
+            output[i * stride + posOffset + 2] = vert.Z;
+            output[i * stride + texOffset] = Math.Clamp(texCoords[i].X, 0.01, 0.99);
+            output[i * stride + texOffset + 1] = Math.Clamp(texCoords[i].Y, 0.01, 0.99);
         }
 
-        for (int i = 0; i < indices.Length; i += 3)
+        if (shader.Attributes.ContainsKey("aNormal"))
         {
-            var ind0 = indices[i];
-            var ind1 = indices[i + 1];
-            var ind2 = indices[i + 2];
-            
-            var v0 = baseVertices[ind0];
-            var v1 = baseVertices[ind1];
-            var v2 = baseVertices[ind2];
-            
-            var norm = Vector3d.Cross(v0 - v1, v2 - v1).Normalized();
+            for (int i = 0; i < indices.Length; i += 3)
+            {
+                var ind0 = indices[i];
+                var ind1 = indices[i + 1];
+                var ind2 = indices[i + 2];
 
-            output[ind0 * 8 + normOffset] = norm.X; 
-            output[ind0 * 8 + normOffset + 1] = norm.Y; 
-            output[ind0 * 8 + normOffset + 2] = norm.Z;
-            
-            output[ind1 * 8 + normOffset] = norm.X; 
-            output[ind1 * 8 + normOffset + 1] = norm.Y; 
-            output[ind1 * 8 + normOffset + 2] = norm.Z;
-            
-            output[ind2 * 8 + normOffset] = norm.X; 
-            output[ind2 * 8 + normOffset + 1] = norm.Y; 
-            output[ind2 * 8 + normOffset + 2] = norm.Z;
+                var v0 = baseVertices[ind0];
+                var v1 = baseVertices[ind1];
+                var v2 = baseVertices[ind2];
+
+                var norm = Vector3d.Cross(v0 - v1, v2 - v1).Normalized();
+
+                output[ind0 * stride + normOffset] = norm.X;
+                output[ind0 * stride + normOffset + 1] = norm.Y;
+                output[ind0 * stride + normOffset + 2] = norm.Z;
+
+                output[ind1 * stride + normOffset] = norm.X;
+                output[ind1 * stride + normOffset + 1] = norm.Y;
+                output[ind1 * stride + normOffset + 2] = norm.Z;
+
+                output[ind2 * stride + normOffset] = norm.X;
+                output[ind2 * stride + normOffset + 1] = norm.Y;
+                output[ind2 * stride + normOffset + 2] = norm.Z;
+            }
         }
 
+        if (!shader.Attributes.TryGetValue("aTexCoord", out var texAttrib)) return output; 
+        for (int i = 0; i < baseVertices.Length; i++)
+        {
+            output[i * stride + texAttrib.Offset] = Math.Clamp(texCoords[i].X, 0.01, 0.99);
+            output[i * stride + texAttrib.Offset + 1] = Math.Clamp(texCoords[i].Y, 0.01, 0.99);
+        }
         return output;
     }
 }

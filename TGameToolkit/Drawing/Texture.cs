@@ -33,6 +33,9 @@ public class Texture
             PixelType.UnsignedByte,
             image.Data);
         
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+        
         GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
     }
     

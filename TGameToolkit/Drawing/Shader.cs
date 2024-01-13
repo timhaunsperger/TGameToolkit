@@ -7,7 +7,7 @@ namespace TGameToolkit.Drawing;
 
 public class Shader : IDisposable
 {
-    private readonly int _handle;
+    public readonly int Handle;
     private readonly Dictionary<string, int> _uniformLocations = new ();
     
     /// <summary>
@@ -17,29 +17,37 @@ public class Shader : IDisposable
     public readonly int AttribStride;
 
     public static readonly Shader UiShader = BuiltIn(
-        "TGameToolkit.Shaders.UI.vert", "TGameToolkit.Shaders.UI.frag");
-    public static readonly Shader LightingShader = BuiltIn(
-        "TGameToolkit.Shaders.basic.vert", "TGameToolkit.Shaders.lighting.frag");
+        "TGameToolkit.Shaders.UI.vert", "TGameToolkit.Shaders.UI.frag", _ => {});
 
-    private static Shader BuiltIn(string vertRsc, string fragRsc)
+    public Action<Shader> OnUse = _ => {};
+
+    private static Shader BuiltIn(string vertRsc, string fragRsc, Action<Shader> useAction)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(vertRsc)!);
+        
+        StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(vertRsc));
         string vertSrc = reader.ReadToEnd();
-        reader = new StreamReader(assembly.GetManifestResourceStream(fragRsc)!);
+        
+        reader = new StreamReader(assembly.GetManifestResourceStream(fragRsc));
         string fragSrc = reader.ReadToEnd();
-        return new Shader(vertSrc, fragSrc);
+       
+        var shader = new Shader(vertSrc, fragSrc);
+        shader.OnUse = useAction;
+        
+        return shader;
     }
 
-    public static Shader GenShader(string vertexPath, string fragmentPath)
+    public static Shader GenShader(string vertexPath, string fragmentPath, Action<Shader>? useAction = null)
     {
         string vertexShaderSource = File.ReadAllText(vertexPath);
         string fragmentShaderSource = File.ReadAllText(fragmentPath);
-        return new Shader(vertexShaderSource, fragmentShaderSource);
+        
+        return new Shader(vertexShaderSource, fragmentShaderSource, useAction);
     }
     
-    private Shader(string vertexShaderSource, string fragmentShaderSource)
+    public Shader(string vertexShaderSource, string fragmentShaderSource, Action<Shader>? useAction = null)
     {
+        OnUse = useAction ?? (_ => {});
         var vertexShader = GL.CreateShader(ShaderType.VertexShader);
         GL.ShaderSource(vertexShader, vertexShaderSource);
         GL.CompileShader(vertexShader);
@@ -54,74 +62,78 @@ public class Shader : IDisposable
         if (infoLogFrag != "")
             Console.WriteLine(infoLogFrag);
         
-        _handle = GL.CreateProgram();
-        GL.AttachShader(_handle, vertexShader);
-        GL.AttachShader(_handle, fragmentShader);
-        GL.LinkProgram(_handle);
+        Handle = GL.CreateProgram();
+        GL.AttachShader(Handle, vertexShader);
+        GL.AttachShader(Handle, fragmentShader);
+        string infoLogProg = GL.GetProgramInfoLog(Handle);
+        if (infoLogProg != "")
+            Console.WriteLine(infoLogProg);
+        GL.LinkProgram(Handle);
         
-        GL.DetachShader(_handle, vertexShader);
-        GL.DetachShader(_handle, fragmentShader);
+        GL.DetachShader(Handle, vertexShader);
+        GL.DetachShader(Handle, fragmentShader);
         GL.DeleteShader(fragmentShader);
         GL.DeleteShader(vertexShader);
         
-        GL.GetProgram(_handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
+        GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
         for (var i = 0; i < numberOfUniforms; i++)
         {
-            var key = GL.GetActiveUniform(_handle, i, out _, out _);
-            var location = GL.GetUniformLocation(_handle, key);
+            var key = GL.GetActiveUniform(Handle, i, out _, out _);
+            var location = GL.GetUniformLocation(Handle, key);
             _uniformLocations.Add(key, location);
         }
         
-        GL.GetProgram(_handle, GetProgramParameterName.ActiveAttributes, out var numAttributes);
+        GL.GetProgram(Handle, GetProgramParameterName.ActiveAttributes, out var numAttributes);
         var offset = 0;
+        
         for (var i = 0; i < numAttributes; i++)
         {
-            var key = GL.GetActiveAttrib(_handle, i, out _, out var type);
-            var location = GL.GetAttribLocation(_handle, key);
+            var key = GL.GetActiveAttrib(Handle, i, out _, out var type);
+            var location = GL.GetAttribLocation(Handle, key);
             var size = ShaderUtils.GetTypeComponentNum(type);
+
             if (key != null)
             {
                 Attributes.Add(key, new AttribInfo(location, offset, size));
             }
             offset += size;
         }
-
         AttribStride = offset;
     }
     
     public int GetAttribLocation(string attribName)
     {
-        return GL.GetAttribLocation(_handle, attribName);
+        return GL.GetAttribLocation(Handle, attribName);
     }
     
     public void SetInt(string name, int data)
     {
-        int location = GL.GetUniformLocation(_handle, name);
-
+        int location = GL.GetUniformLocation(Handle, name);
         GL.Uniform1(location, data);
     }
     
     public void SetFloat(string name, float data)
     {
-        GL.UseProgram(_handle);
+        GL.UseProgram(Handle);
         GL.Uniform1(_uniformLocations[name], data);
     }
     
     public void SetVector3(string name, Vector3 data)
     {
-        GL.UseProgram(_handle);
+        GL.UseProgram(Handle);
         GL.Uniform3(_uniformLocations[name], data);
     }
     
     public void SetMatrix4(string name, Matrix4 data)
     {
-        GL.UseProgram(_handle);
+        GL.UseProgram(Handle);
         GL.UniformMatrix4(_uniformLocations[name], true, ref data);
     }
     
     public void Use()
     {
-        GL.UseProgram(_handle);
+        OnUse.Invoke(this);
+        GL.UseProgram(Handle);
     }
     
     private bool _disposedValue;
@@ -130,9 +142,8 @@ public class Shader : IDisposable
     {
         if (!_disposedValue)
         {
-            GL.DeleteProgram(_handle);
-
             _disposedValue = true;
+            GL.DeleteProgram(Handle);
         }
     }
 
@@ -140,7 +151,6 @@ public class Shader : IDisposable
     {
         if (_disposedValue) return;
         Console.WriteLine("GPU Resource leak! Call Dispose()");
-        Dispose();
     }
     
     public void Dispose()

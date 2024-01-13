@@ -79,6 +79,6 @@ public class Camera : GameObject
     
     public Camera()
     {
-        Pos = Vector3.Zero;
+        Pos = (0, 0, 10);
     }
 }
