@@ -128,7 +128,7 @@ public class RenderMesh
                 var o1 = _normDataOffset + ind1 * stride;
                 var o2 = _normDataOffset + ind2 * stride;
 
-                var norm = Vector3d.Cross(v0 - v1, v0 - v2).Normalized();
+                var norm = Vector3d.Cross(v1 - v0, v0 - v2).Normalized();
                 _vertices[o0] = norm.X; _vertices[o0 + 1] = norm.Y; _vertices[o0 + 2] = norm.Z;
                 _vertices[o1] = norm.X; _vertices[o1 + 1] = norm.Y; _vertices[o1 + 2] = norm.Z;
                 _vertices[o2] = norm.X; _vertices[o2 + 1] = norm.Y; _vertices[o2 + 2] = norm.Z;

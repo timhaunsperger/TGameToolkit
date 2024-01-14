@@ -34,6 +34,17 @@ public class ObjectController : Panel
                 };
                 AddElement(slider, field.Name);
             }
+            
+            if (field.FieldType == typeof(bool))
+            {
+                var val = (bool?)field.GetValue(obj) ?? false;
+                var box = new Checkbox(window, Vector2i.Zero, SlotHeight, val);
+                box.OnPress = () => {
+                    field.SetValue(obj, box.IsChecked);
+                    obj.OnModify();
+                };
+                AddElement(box, field.Name);
+            }
         }
     }
 }
@@ -49,15 +60,12 @@ public class ShaderController : Panel
         {
             shader.Use();
             var key = GL.GetActiveUniform(shader.Handle, i, out _, out var type) ?? "";
-            Console.WriteLine(key);
+
             switch (type)
             {
                 case ActiveUniformType.Float:
                 {
-                    float value = 1;
-                    GL.GetUniform(shader.Handle, i, out value);
-
-                    var slider = new Slider(window, Vector2i.Zero, (100, SlotHeight), 0, value * 4, value);
+                    var slider = new Slider(window, Vector2i.Zero, (100, SlotHeight), -5, 20, 0, intSteps:false);
                     slider.OnUpdate = () => {
                         shader.Use();
                         shader.SetFloat(key, slider.Value);
@@ -67,10 +75,7 @@ public class ShaderController : Panel
                 }
                 case ActiveUniformType.Int:
                 {
-                    int value = 1;
-                    GL.GetUniform(shader.Handle, i, out value);
-
-                    var slider = new Slider(window, Vector2i.Zero, (100, SlotHeight), 0, value * 4, value);
+                    var slider = new Slider(window, Vector2i.Zero, (100, SlotHeight), -5, 20, 0, intSteps:true);
                     slider.OnUpdate = () => {
                         shader.SetInt(key, (int)slider.Value);
                     };

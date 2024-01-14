@@ -208,7 +208,7 @@ public static class MeshBuilder
                 var v1 = baseVertices[ind1];
                 var v2 = baseVertices[ind2];
 
-                var norm = Vector3d.Cross(v0 - v1, v2 - v1).Normalized();
+                var norm = Vector3d.Cross(v1 - v0, v0 - v2).Normalized();
 
                 output[ind0 * stride + normOffset] = norm.X;
                 output[ind0 * stride + normOffset + 1] = norm.Y;

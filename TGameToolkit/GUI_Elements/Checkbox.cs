@@ -14,14 +14,14 @@ public class Checkbox : Element
     public Action OnPress = () => { };
     
     public Checkbox( 
-        AppWindow window, Vector2i pos, int size, Vector4i? color = null,
+        AppWindow window, Vector2i pos, int size, bool isChecked = false, Vector4i? color = null,
         AlignMode align = AlignMode.Default) 
         : base(window, pos, Shader.UiShader, Texture.Blank, align, (size, size))
     {
         BaseTex = Texture.Box(color ?? Theme.Base, size, size, Theme.Highlight2, 1 );
         CheckTex = Texture.Box(Theme.White, size / 2, size / 2, Theme.Blank, size / 10);
-        
-        UpdateTexture(BaseTex);
+        IsChecked = isChecked;
+        UpdateTexture(IsChecked ? CheckTex : BaseTex);
         
         OnMouseClick = ClickAction;
         OnMouseUp = MouseUpAction;
@@ -39,7 +39,6 @@ public class Checkbox : Element
         Flags.Remove("Active");
         
         if (!BoundingBox.ContainsInclusive(pos)) return;
-        OnPress.Invoke();
         
         if (IsChecked)
         {
@@ -50,6 +49,7 @@ public class Checkbox : Element
 
         IsChecked = true;
         UpdateTexture(CheckTex);
+        OnPress.Invoke();
     }
     
 }

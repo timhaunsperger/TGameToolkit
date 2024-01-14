@@ -87,6 +87,7 @@ public class Postprocessor
         _shader.SetInt("colorTex", 0);
         _shader.SetInt("posTex", 1);
         _shader.SetInt("depthTex", 2);
+        _shader.SetInt("normTex", 3);
         
         GL.ActiveTexture(TextureUnit.Texture0);
         GL.BindTexture(TextureTarget.Texture2D, Scene.GeometryPass.ColorTex); 
@@ -96,6 +97,9 @@ public class Postprocessor
         
         GL.ActiveTexture(TextureUnit.Texture2);
         GL.BindTexture(TextureTarget.Texture2D, Scene.GeometryPass.DepthTex); 
+        
+        GL.ActiveTexture(TextureUnit.Texture3);
+        GL.BindTexture(TextureTarget.Texture2D, Scene.GeometryPass.NormalTex); 
         
         GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
     }

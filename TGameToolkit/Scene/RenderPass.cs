@@ -11,6 +11,7 @@ public class RenderPass
     public int ColorTex;
     public int PosTex;
     public int DepthTex;
+    public int NormalTex;
     public Shader? PassShader;
 
     public RenderPass(Shader? shader = null)
@@ -70,7 +71,22 @@ public class RenderPass
         GL.BindTexture(TextureTarget.Texture2D, 0);
         GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, DepthTex, 0);
         
-        GL.DrawBuffers(2, new [] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1 });
+        // Create normal texture
+        NormalTex = GL.GenTexture();
+        GL.BindTexture(TextureTarget.Texture2D, NormalTex);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+        GL.TexImage2D(TextureTarget.Texture2D, 
+            0, 
+            PixelInternalFormat.Rgba, 
+            Scene.Resolution.X, Scene.Resolution.Y, 0, 
+            PixelFormat.Rgba, 
+            PixelType.Float, 
+            0);
+        GL.BindTexture(TextureTarget.Texture2D, 0);
+        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, NormalTex, 0);
+        
+        GL.DrawBuffers(3, new [] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2 });
         Console.WriteLine(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
     }
 
@@ -80,6 +96,7 @@ public class RenderPass
         GL.DeleteTexture(ColorTex);
         GL.DeleteTexture(DepthTex);
         GL.DeleteTexture(PosTex);
+        GL.DeleteTexture(NormalTex);
         Init();
     }
 
