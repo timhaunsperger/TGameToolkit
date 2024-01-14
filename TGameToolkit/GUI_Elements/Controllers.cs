@@ -54,7 +54,6 @@ public class ShaderController : Panel
     public ShaderController(AppWindow window, Vector2i pos, Shader shader)
         : base(window, pos, 400, shader.GetType().ToString())
     {
-        // NOT WORKING
         GL.GetProgram(shader.Handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
         for (int i = 0; i < numberOfUniforms; i++)
         {
@@ -77,6 +76,7 @@ public class ShaderController : Panel
                 {
                     var slider = new Slider(window, Vector2i.Zero, (100, SlotHeight), -5, 20, 0, intSteps:true);
                     slider.OnUpdate = () => {
+                        shader.Use();
                         shader.SetInt(key, (int)slider.Value);
                     };
                     AddElement(slider, key);
