@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using TGameToolkit.Attributes;
-using TGameToolkit.Drawing;
+using TGameToolkit.Graphics;
 
 namespace TGameToolkit.Objects;
 

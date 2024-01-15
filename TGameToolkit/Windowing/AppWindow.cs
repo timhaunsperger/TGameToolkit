@@ -5,7 +5,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using TGameToolkit.Attributes;
-using TGameToolkit.Drawing;
+using TGameToolkit.Graphics;
 using TGameToolkit.GUI_Elements;
 using TGameToolkit.Lighting;
 using TGameToolkit.Objects;

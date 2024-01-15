@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using TGameToolkit.Attributes;
-using TGameToolkit.Drawing;
+using TGameToolkit.Graphics;
 using TGameToolkit.Lighting;
 using TGameToolkit.Objects;
 

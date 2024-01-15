@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using TGameToolkit.Attributes;
-using TGameToolkit.Drawing;
+using TGameToolkit.Graphics;
 using TGameToolkit.Objects;
 
 namespace TGameToolkit;

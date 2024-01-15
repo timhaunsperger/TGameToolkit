@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using TGameToolkit.Utils;
 
-namespace TGameToolkit.Drawing;
+namespace TGameToolkit.Graphics;
 
 public class Shader : IDisposable
 {
@@ -138,15 +138,6 @@ public class Shader : IDisposable
     
     private bool _disposedValue;
 
-    private void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            _disposedValue = true;
-            GL.DeleteProgram(Handle);
-        }
-    }
-
     ~Shader()
     {
         if (_disposedValue) return;
@@ -155,7 +146,11 @@ public class Shader : IDisposable
     
     public void Dispose()
     {
-        Dispose(true);
+        if (!_disposedValue)
+        {
+            _disposedValue = true;
+            GL.DeleteProgram(Handle);
+        }
         GC.SuppressFinalize(this);
     }
     

@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 using StbImageSharp;
 using TGameToolkit.GUI_Elements;
 
-namespace TGameToolkit.Drawing;
+namespace TGameToolkit.Graphics;
 public class Texture
 {
     public int Handle;
@@ -60,6 +60,53 @@ public class Texture
             pixelFormat, 
             PixelType.UnsignedByte,
             imageData);
+    }
+    
+    public Texture(float[] imageData, int width, int height, PixelFormat pixelFormat = PixelFormat.Rgba)
+    {
+        Handle = GL.GenTexture();
+        Width = width;
+        Height = height;
+        GL.BindTexture(TextureTarget.Texture2D, Handle);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureWrapS, (int)TextureParameterName.ClampToBorder);
+        GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureWrapR, (int)TextureParameterName.ClampToBorder);
+        GL.TexImage2D(
+            TextureTarget.Texture2D,
+            0,
+            PixelInternalFormat.Rgba, 
+            width, 
+            height, 
+            0, 
+            pixelFormat, 
+            PixelType.Float,
+            imageData);
+    }
+    
+    public Texture(int width, int height, 
+        PixelInternalFormat internalFormat = PixelInternalFormat.Rgba,
+        PixelFormat pixelFormat = PixelFormat.Rgba, 
+        TextureParameterName wrapBehavior = TextureParameterName.ClampToEdge)
+    {
+        Handle = GL.GenTexture();
+        Width = width;
+        Height = height;
+        GL.BindTexture(TextureTarget.Texture2D, Handle);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureWrapS, (int)wrapBehavior);
+        GL.TexParameter(TextureTarget.Texture2D,TextureParameterName.TextureWrapR, (int)wrapBehavior);
+        GL.TexImage2D(
+            TextureTarget.Texture2D,
+            0,
+            internalFormat, 
+            width, 
+            height, 
+            0, 
+            pixelFormat, 
+            PixelType.Float,
+            0);
     }
 
     public static Texture Box(Vector4i color, int width, int height, Vector4i? outlineColor = null, int outlineWidth = 0)

@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using TGameToolkit.Drawing;
+using TGameToolkit.Graphics;
 using TGameToolkit.GUI_Elements;
 
 namespace TGameToolkit.Lighting;

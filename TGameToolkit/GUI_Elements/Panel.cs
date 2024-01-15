@@ -1,5 +1,5 @@
 ﻿using OpenTK.Mathematics;
-using TGameToolkit.Drawing;
+using TGameToolkit.Graphics;
 using TGameToolkit.Windowing;
 
 namespace TGameToolkit.GUI_Elements;

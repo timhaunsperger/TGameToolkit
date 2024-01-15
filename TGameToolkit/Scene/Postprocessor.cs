@@ -1,5 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using TGameToolkit.Drawing;
+using TGameToolkit.Graphics;
 
 namespace TGameToolkit.Objects;
 

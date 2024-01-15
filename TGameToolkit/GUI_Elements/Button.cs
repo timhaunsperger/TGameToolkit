@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-using TGameToolkit.Drawing;
+using TGameToolkit.Graphics;
 using TGameToolkit.GUI_Elements.Text;
 using TGameToolkit.Windowing;
 

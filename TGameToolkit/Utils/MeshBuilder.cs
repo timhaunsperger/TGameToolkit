@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices.JavaScript;
 using OpenTK.Mathematics;
 using TGameToolkit.Attributes;
-using TGameToolkit.Drawing;
+using TGameToolkit.Graphics;
 using TGameToolkit.Lighting;
 
 namespace TGameToolkit.Utils;

@@ -6,7 +6,7 @@ using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using TGameToolkit.Drawing;
+using TGameToolkit.Graphics;
 
 namespace TGameToolkit.GUI_Elements.Text;
 

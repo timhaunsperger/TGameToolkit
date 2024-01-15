@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using TGameToolkit.Drawing;
+using TGameToolkit.Graphics;
 using TGameToolkit.Objects;
 using TGameToolkit.Windowing;
 
@@ -64,7 +64,7 @@ public class ShaderController : Panel
             {
                 case ActiveUniformType.Float:
                 {
-                    var slider = new Slider(window, Vector2i.Zero, (100, SlotHeight), -5, 20, 0, intSteps:false);
+                    var slider = new Slider(window, Vector2i.Zero, (100, SlotHeight), 0, 20, 0, intSteps:false);
                     slider.OnUpdate = () => {
                         shader.Use();
                         shader.SetFloat(key, slider.Value);
@@ -74,7 +74,7 @@ public class ShaderController : Panel
                 }
                 case ActiveUniformType.Int:
                 {
-                    var slider = new Slider(window, Vector2i.Zero, (100, SlotHeight), -5, 20, 0, intSteps:true);
+                    var slider = new Slider(window, Vector2i.Zero, (100, SlotHeight), 0, 50, 0, intSteps:true);
                     slider.OnUpdate = () => {
                         shader.Use();
                         shader.SetInt(key, (int)slider.Value);
