@@ -45,7 +45,7 @@ public class ComputeShader : IDisposable
         GL.DispatchCompute(workGroupsX, workGroupsY, workGroupsZ);
     }
 
-    public void Wait()
+    public void BlockGpu()
     {
         GL.MemoryBarrier(MemoryBarrierFlags.AllBarrierBits);
     }

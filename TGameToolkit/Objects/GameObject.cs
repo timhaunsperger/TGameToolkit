@@ -18,6 +18,12 @@ public class GameObject
         {
             attribute.Update(deltaTime);
         }
+        OnUpdate(deltaTime);
+    }
+    
+    protected virtual void OnUpdate(double deltaTime)
+    {
+
     }
     
     public void RenderMeshes(Shader? shader = null)

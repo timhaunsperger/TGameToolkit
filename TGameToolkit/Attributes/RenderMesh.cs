@@ -29,8 +29,6 @@ public class RenderMesh
     private int _posDataOffset;
     private int _normDataOffset;
 
-    private Vector3d _pos = Vector3d.Zero;
-
     public Shader Shader { get; }
     public Dictionary<string, Material> Materials = new ();
     
@@ -153,6 +151,21 @@ public class RenderMesh
     public void SetVertexAttribute(string attribName, double data, int vertIndex)
     {
         _vertices[Shader.Attributes[attribName].Offset + vertIndex * Shader.AttribStride] = data;
+    }
+
+    public void Move(Vector3d offset)
+    {
+        var stride = Shader.AttribStride;
+        var vtxPosOffset = Shader.Attributes["aPosition"].Offset;
+        for (int i = 0; i < _vertices.Length / stride; i++)
+        {
+            _vertices[vtxPosOffset + i * stride] += offset.X;
+            _vertices[vtxPosOffset + i * stride + 1] += offset.Y;
+            _vertices[vtxPosOffset + i * stride + 2] += offset.Z;
+        }
+        
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+        GL.BufferSubData(BufferTarget.ArrayBuffer, 0, _vertices.Length * sizeof(double), _vertices);
     }
     
     public virtual void Render(Shader? shader = null)

@@ -20,6 +20,11 @@ public class Shader : IDisposable
         "TGameToolkit.Shaders.UI.vert", "TGameToolkit.Shaders.UI.frag", _ => {});
 
     public Action<Shader> OnUse = _ => {};
+    public static Action<Shader> UpdateProjection = s =>
+    {
+        s.SetMatrix4("view", Scene.GameCamera.GetViewMatrix());
+        s.SetMatrix4("projection", Scene.GameCamera.GetProjectionMatrix());
+    };
 
     private static Shader BuiltIn(string vertRsc, string fragRsc, Action<Shader> useAction)
     {
@@ -132,8 +137,8 @@ public class Shader : IDisposable
     
     public void Use()
     {
-        OnUse.Invoke(this);
         GL.UseProgram(Handle);
+        OnUse.Invoke(this);
     }
     
     private bool _disposedValue;
